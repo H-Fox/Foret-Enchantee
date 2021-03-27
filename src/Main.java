@@ -19,6 +19,8 @@ public class Main {
 		foret6.afficher();
 		Foret foret7 = new Foret();
 		foret7.afficher();
+		
+		System.out.println("test");
 	}
 
 }
