@@ -3,14 +3,24 @@ import constantes.EtatsCases;
 public class Foret {
 
 	protected Case[][] grille;
-	protected static int dimension = 3;
+	protected static int dimension = 2;
+	protected Joueur joueur;
 
 	public Foret() {
-		grille = new Case[dimension][dimension];
-		initialiserGrille();
+		
 		dimension++;
+		System.out.println(dimension);
+		joueur = new Joueur();
+		grille = new Case[dimension][dimension];
+		for(int i = 0; i < dimension; i ++) {
+			for(int j = 0; j < dimension; j ++) {
+				grille[i][j] = new Case();
+			}
+		}
+		initialiserGrille();
+		
 	}
-	
+
 	/**
 	 * Initialise la carte en placant le joueur et le portail
 	 * 
@@ -18,16 +28,173 @@ public class Foret {
 	 */
 	private void initialiserGrille() {
 		//Placer joueur
-		int rand1 = (int) Math.random()*Foret.dimension;
-		int rand2 = (int) Math.random()*Foret.dimension;
+		int x = (int) (Math.random()*Foret.dimension);
+		int y = (int) (Math.random()*Foret.dimension);
 		
-		grille[rand1][rand2].setEtat(EtatsCases.JOUEUR);
-		
+		System.out.println("Placer joueur : "+x+", "+y);
+
+		grille[x][y].setJoueur(true);
+		joueur.setX(x);
+		joueur.setY(y);
+
 		//Placer portail
-		rand1 = (int) Math.random()*Foret.dimension;
-		rand2 = (int) Math.random()*Foret.dimension;
-		
-		grille[rand1][rand2].setEtat(EtatsCases.PORTAIL);
+		x = (int) (Math.random()*Foret.dimension);
+		y = (int) (Math.random()*Foret.dimension);
+		System.out.println("Placer portail : "+x+", "+y);
+
+		grille[x][y].setPortail(true);
+
+		//Placer monstres et/ou crevasse
+		int nombreCasesARemplir = (int) (Math.random()*(Foret.dimension*Foret.dimension)); //Nombre de cases à remplir entre 0 et dimension²
+		System.out.println("Nombre de cases a remplir : "+nombreCasesARemplir);
+		for (int i = 0; i < nombreCasesARemplir; i++) {
+
+			do {
+				x = (int) (Math.random()*Foret.dimension);
+				y = (int) (Math.random()*Foret.dimension);
+				System.out.println("Placer element : "+x+", "+y);
+			}
+			while(grille[x][y].isJoueur()
+					|| grille[x][y].isPortail());
+
+			int choix = (int) (Math.random()*3);
+
+			switch(choix) {
+			case 0:
+				//Placer un monstre	
+				System.out.println("Placer monstre : "+x+", "+y);
+				grille[x][y].getContenu().add(new Monstre());
+				break;
+			case 1:
+				//Placer une crevasse	
+				System.out.println("Placer crevasse : "+x+", "+y);
+				grille[x][y].getContenu().add(new Crevasse());
+				break;
+			}
+
+		}
+
+		//Placer vent et odeur
+		for (int i = 0; i < Foret.dimension; i++) {
+			for (int j = 0; j < Foret.dimension; j++) {
+				for(Element element : grille[i][j].getContenu()) {
+					if(element instanceof Monstre) {
+						//Ajout odeur UP
+						if(j-1 >= 0) {
+							switch(grille[i][j-1].getEtat()) {
+							case EtatsCases.VIDE:
+								grille[i][j-1].setEtat(EtatsCases.ODEUR);
+								break;
+							case EtatsCases.VENT:
+								grille[i][j-1].setEtat(EtatsCases.VENT_ODEUR);
+								break;							
+							}
+						}						
+						//Ajout odeur DOWN
+						if(j+1 <= Foret.dimension-1) {
+							switch(grille[i][j+1].getEtat()) {
+							case EtatsCases.VIDE:
+								grille[i][j+1].setEtat(EtatsCases.ODEUR);
+								break;
+							case EtatsCases.VENT:
+								grille[i][j+1].setEtat(EtatsCases.VENT_ODEUR);
+								break;	
+							}
+						}
+						//Ajout odeur RIGHT
+						if(i+1 <= Foret.dimension-1) {
+							switch(grille[i+1][j].getEtat()) {
+							case EtatsCases.VIDE:
+								grille[i+1][j].setEtat(EtatsCases.ODEUR);
+								break;
+							case EtatsCases.VENT:
+								grille[i+1][j].setEtat(EtatsCases.VENT_ODEUR);
+								break;	
+							}
+						}
+						//Ajout odeur LEFT
+						if(i-1 >= 0) {
+							switch(grille[i-1][j].getEtat()) {
+							case EtatsCases.VIDE:
+								grille[i-1][j].setEtat(EtatsCases.ODEUR);
+								break;
+							case EtatsCases.VENT:
+								grille[i-1][j].setEtat(EtatsCases.VENT_ODEUR);
+								break;
+							}
+						}
+					}
+					if(element instanceof Crevasse) {
+						//Ajout vent UP
+						if(j-1 >= 0) {
+							switch(grille[i][j-1].getEtat()) {
+							case EtatsCases.VIDE:
+								grille[i][j-1].setEtat(EtatsCases.VENT);
+								break;
+							case EtatsCases.ODEUR:
+								grille[i][j-1].setEtat(EtatsCases.VENT_ODEUR);
+								break;
+							}
+						}						
+						//Ajout vent DOWN
+						if(j+1 <= Foret.dimension-1) {
+							switch(grille[i][j+1].getEtat()) {
+							case EtatsCases.VIDE:
+								grille[i][j+1].setEtat(EtatsCases.VENT);
+								break;
+							case EtatsCases.ODEUR:
+								grille[i][j+1].setEtat(EtatsCases.VENT_ODEUR);
+								break;
+							}
+						}
+						//Ajout vent RIGHT
+						if(i+1 <= Foret.dimension-1) {
+							switch(grille[i+1][j].getEtat()) {
+							case EtatsCases.VIDE:
+								grille[i+1][j].setEtat(EtatsCases.VENT);
+								break;
+							case EtatsCases.ODEUR:
+								grille[i+1][j].setEtat(EtatsCases.VENT_ODEUR);
+								break;
+							}
+						}
+						//Ajout vent LEFT
+						if(i-1 >= 0) {
+							switch(grille[i-1][j].getEtat()) {
+							case EtatsCases.VIDE:
+								grille[i-1][j].setEtat(EtatsCases.VENT);
+								break;
+							case EtatsCases.ODEUR:
+								grille[i-1][j].setEtat(EtatsCases.VENT_ODEUR);
+								break;
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+	public void afficher() {
+		System.out.println("Dimension dans afficher :"+ dimension);
+		System.out.println("Dimensions grille dans afficher : "+grille.length+", "+grille[0].length);
+		for (int i = 0; i < Foret.dimension; i++) {
+			for (int j = 0; j < Foret.dimension; j++) {
+				boolean monstre = false;
+				boolean crevasse = false;
+				for(Element element : grille[i][j].getContenu()) {
+					if(element instanceof Monstre) {
+						monstre = true;
+					}
+					if(element instanceof Crevasse) {
+						crevasse = true;
+					}
+				}
+				System.out.print(monstre+", "+crevasse+", "+grille[i][j].getEtat()+"   ");
+			}
+			System.out.println();
+		}
+
 	}
 
 }
