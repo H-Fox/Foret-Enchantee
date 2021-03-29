@@ -1,12 +1,22 @@
+import java.util.ArrayList;
+import java.util.List;
+
 import constantes.Directions;
 
-public class Joueur extends Element{
+public class Agent extends Element{
 	
-	protected int x;
-	protected int y;
+	protected int x = -1;
+	protected int y = -1;
+	protected Case casePrecedente;
 	
-	public Joueur() {
-		
+	protected int performance = 0;
+	protected int nombreCasesParcourues = 0;
+	
+	protected List<Case> casesAdjacentes;
+	
+	public Agent() {
+		casePrecedente = new Case();
+		casesAdjacentes = new ArrayList<>();
 	}
 	
 	protected void deplacer(int direction, Foret foret) {
@@ -33,6 +43,10 @@ public class Joueur extends Element{
 			break;
 			
 		}
+	}
+	
+	protected void trouverDirection(Foret foret) {
+		
 	}
 
 	public int getX() {

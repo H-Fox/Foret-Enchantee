@@ -4,21 +4,22 @@ public class Foret {
 
 	protected Case[][] grille;
 	protected static int dimension = 2;
-	protected Joueur joueur;
+	protected Agent joueur;
 
 	public Foret() {
 		
 		dimension++;
 		System.out.println(dimension);
-		joueur = new Joueur();
+		joueur = new Agent();
 		grille = new Case[dimension][dimension];
 		for(int i = 0; i < dimension; i ++) {
 			for(int j = 0; j < dimension; j ++) {
 				grille[i][j] = new Case();
+				grille[i][j].getPosition().add(i);
+				grille[i][j].getPosition().add(j);
 			}
 		}
 		initialiserGrille();
-		
 	}
 
 	/**
@@ -42,7 +43,7 @@ public class Foret {
 		y = (int) (Math.random()*Foret.dimension);
 		System.out.println("Placer portail : "+x+", "+y);
 
-		grille[x][y].setPortail(true);
+		grille[x][y].setBrillante(true);
 
 		//Placer monstres et/ou crevasse
 		int nombreCasesARemplir = (int) (Math.random()*(Foret.dimension*Foret.dimension)); //Nombre de cases à remplir entre 0 et dimension²
@@ -55,7 +56,7 @@ public class Foret {
 				System.out.println("Placer element : "+x+", "+y);
 			}
 			while(grille[x][y].isJoueur()
-					|| grille[x][y].isPortail());
+					|| grille[x][y].isBrillante());
 
 			int choix = (int) (Math.random()*3);
 

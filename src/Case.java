@@ -8,12 +8,16 @@ public class Case {
 	private int etat = EtatsCases.VIDE;
 	private List<Element> contenu;
 	private boolean joueur;
-	private boolean portail;
+	private boolean brillante;
+	private boolean visitee;
+	private List<Integer> position;
 
 	public Case() {
 		contenu = new ArrayList<>();
 		joueur = false;
-		portail = false;
+		brillante = false;
+		visitee = false;
+		position = new ArrayList<>();
 	}
 
 	public int getEtat() {
@@ -40,13 +44,28 @@ public class Case {
 		this.joueur = joueur;
 	}
 
-	public boolean isPortail() {
-		return portail;
+	public boolean isBrillante() {
+		return brillante;
 	}
 
-	public void setPortail(boolean portail) {
-		this.portail = portail;
-	}	
-	
+	public void setBrillante(boolean portail) {
+		this.brillante = portail;
+	}
+
+	public boolean isVisitee() {
+		return visitee;
+	}
+
+	public void setVisitee(boolean visitee) {
+		this.visitee = visitee;
+	}
+
+	public List<Integer> getPosition() {
+		return position;
+	}
+
+	public void setPosition(List<Integer> position) {
+		this.position = position;
+	}		
 	
 }
