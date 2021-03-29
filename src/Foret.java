@@ -10,7 +10,7 @@ public class Foret {
 		
 		dimension++;
 		System.out.println(dimension);
-		joueur = new Agent();
+		joueur = new Agent(this);
 		grille = new Case[dimension][dimension];
 		for(int i = 0; i < dimension; i ++) {
 			for(int j = 0; j < dimension; j ++) {
@@ -35,6 +35,7 @@ public class Foret {
 		System.out.println("Placer joueur : "+x+", "+y);
 
 		grille[x][y].setJoueur(true);
+		grille[x][y].setVisitee(true);
 		joueur.setX(x);
 		joueur.setY(y);
 
@@ -47,13 +48,13 @@ public class Foret {
 
 		//Placer monstres et/ou crevasse
 		int nombreCasesARemplir = (int) (Math.random()*(Foret.dimension*Foret.dimension)); //Nombre de cases à remplir entre 0 et dimension²
-		System.out.println("Nombre de cases a remplir : "+nombreCasesARemplir);
+		//System.out.println("Nombre de cases a remplir : "+nombreCasesARemplir);
 		for (int i = 0; i < nombreCasesARemplir; i++) {
 
 			do {
 				x = (int) (Math.random()*Foret.dimension);
 				y = (int) (Math.random()*Foret.dimension);
-				System.out.println("Placer element : "+x+", "+y);
+				//System.out.println("Placer element : "+x+", "+y);
 			}
 			while(grille[x][y].isJoueur()
 					|| grille[x][y].isBrillante());
@@ -63,13 +64,15 @@ public class Foret {
 			switch(choix) {
 			case 0:
 				//Placer un monstre	
-				System.out.println("Placer monstre : "+x+", "+y);
+				//System.out.println("Placer monstre : "+x+", "+y);
 				grille[x][y].getContenu().add(new Monstre());
+				grille[x][y].setMonstre(1);
 				break;
 			case 1:
 				//Placer une crevasse	
-				System.out.println("Placer crevasse : "+x+", "+y);
+				//System.out.println("Placer crevasse : "+x+", "+y);
 				grille[x][y].getContenu().add(new Crevasse());
+				grille[x][y].setCrevasse(1);
 				break;
 			}
 
