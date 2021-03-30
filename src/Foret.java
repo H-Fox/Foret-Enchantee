@@ -1,3 +1,7 @@
+import java.util.ArrayList;
+import java.util.List;
+
+import constantes.Directions;
 import constantes.EtatsCases;
 
 public class Foret {
@@ -17,10 +21,13 @@ public class Foret {
 				grille[i][j] = new Case();
 				grille[i][j].getPosition().add(i);
 				grille[i][j].getPosition().add(j);
+				grille[i][j].setForet(this);
 			}
 		}
 		initialiserGrille();
 	}
+	
+
 
 	/**
 	 * Initialise la carte en placant le joueur et le portail
@@ -38,6 +45,7 @@ public class Foret {
 		grille[x][y].setVisitee(true);
 		joueur.setX(x);
 		joueur.setY(y);
+		joueur.getCasesConnues().add(grille[x][y]);
 
 		//Placer portail
 		x = (int) (Math.random()*Foret.dimension);

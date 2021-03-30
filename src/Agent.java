@@ -7,21 +7,24 @@ public class Agent extends Element{
 
 	protected int x = -1;
 	protected int y = -1;
+
 	protected Case casePrecedente;
+	protected List<Case> casesConnues;
 
 	protected int performance = 0;
-	protected int nombreCasesParcourues = 0;
-
-	protected List<Case> casesAdjacentes;
 
 	protected Effecteur effecteur;
+	protected List<Effecteur> listeActionsPossibles;
 	protected Capteur capteur;
 
 	protected Foret foret;
 
+
+
 	public Agent(Foret foret) {
+		listeActionsPossibles = new ArrayList<>();
 		casePrecedente = new Case();
-		casesAdjacentes = new ArrayList<>();
+		casesConnues = new ArrayList<>();
 		this.foret = foret;
 	}
 
@@ -54,419 +57,121 @@ public class Agent extends Element{
 		}
 	}
 
-	protected void mettreAJour() {
-		if(effecteur == null) {
-			casesAdjacentes = initialiserCasesAdjacentes();
-		}
-		else {
-			List<Case> nouvellesCasesAdjacentes = new ArrayList<>();
-			nouvellesCasesAdjacentes = initialiserCasesAdjacentes();
+	protected void listerActionsPossibles() {
 
-			// l'agent s'est déplacé vers le haut
-			if(this.effecteur.getDirection() == Directions.HAUT) {
+		List<Effecteur> actionsPossibles = new ArrayList<>();
+		List<Case> casesCiblesPourTirer = new ArrayList<>();
 
-				// Modification des parametres de la case voisine Haute
-				if (nouvellesCasesAdjacentes.get(Directions.HAUT).isValable()) {
-
-					if(capteur.isOdeur() == true) {
-						nouvellesCasesAdjacentes.get(Directions.HAUT).setMonstre(2);
-					}
-					if(capteur.isVent() == true) {
-						nouvellesCasesAdjacentes.get(Directions.HAUT).setCrevasse(2);
-					}
+		for(int i = 0; i < Foret.dimension; i++) {
+			for(int j = 0; j < Foret.dimension; j++) {
+				//Prio numero 1 : Les cases non visitees et vides
+				if(!foret.grille[i][j].isVisitee()
+						&& foret.grille[i][j].getDanger() == 0) {
+					List<Integer> pos = new ArrayList<>();
+					pos.add(i);
+					pos.add(j);
+					Effecteur effecteur = new Effecteur(pos, 1, false);
+					actionsPossibles.add(effecteur);
 				}
-
-				// Modification des parametres de la case voisine gauche
-				if (nouvellesCasesAdjacentes.get(Directions.GAUCHE).isValable()) {
-					if(capteur.isOdeur() == true) {
-						nouvellesCasesAdjacentes.get(Directions.GAUCHE).setMonstre(2);
-						if(this.casesAdjacentes.get(Directions.GAUCHE).isVisitee() == true && this.casesAdjacentes.get(Directions.GAUCHE).isOdeur() == false) {
-							nouvellesCasesAdjacentes.get(Directions.GAUCHE).setMonstre(0);
-						}
-					}
-					if(capteur.isVent() == true) {
-						nouvellesCasesAdjacentes.get(Directions.GAUCHE).setCrevasse(2);
-						if(this.casesAdjacentes.get(Directions.GAUCHE).isVisitee() == true && this.casesAdjacentes.get(Directions.GAUCHE).isVent() == false) {
-							nouvellesCasesAdjacentes.get(Directions.GAUCHE).setCrevasse(0);
-						}
-					}
-
-					if (capteur.isOdeur() == true && this.casesAdjacentes.get(Directions.GAUCHE).isOdeur() == true) {
-						nouvellesCasesAdjacentes.get(Directions.GAUCHE).setMonstre(1);
-						if (nouvellesCasesAdjacentes.get(Directions.DROITE).isValable()) nouvellesCasesAdjacentes.get(Directions.DROITE).setVide();
-					}
-					if (capteur.isVent() == true && this.casesAdjacentes.get(Directions.GAUCHE).isVent() == true) {
-						nouvellesCasesAdjacentes.get(Directions.GAUCHE).setCrevasse(1);
-						if (nouvellesCasesAdjacentes.get(Directions.DROITE).isValable()) nouvellesCasesAdjacentes.get(Directions.DROITE).setVide();
-
-					}
-					if (capteur.isVent()==true && this.casesAdjacentes.get(Directions.GAUCHE).isOdeur()==true) {
-						nouvellesCasesAdjacentes.get(Directions.GAUCHE).setVide();
-					}
-					if (capteur.isOdeur()==true && this.casesAdjacentes.get(Directions.GAUCHE).isVent()==true) {
-						nouvellesCasesAdjacentes.get(Directions.GAUCHE).setVide();
-					}	
-				} 
-
-				// Modification des parametres de la case voisine Droite
-				if (nouvellesCasesAdjacentes.get(Directions.DROITE).isValable()) {
-					if(capteur.isOdeur() == true) {
-						nouvellesCasesAdjacentes.get(Directions.DROITE).setMonstre(2);
-						if(this.casesAdjacentes.get(Directions.DROITE).isVisitee() == true && this.casesAdjacentes.get(Directions.DROITE).isOdeur() == false) {
-							nouvellesCasesAdjacentes.get(Directions.DROITE).setMonstre(0);
-						}
-					}
-					if(capteur.isVent() == true) {
-						nouvellesCasesAdjacentes.get(Directions.DROITE).setCrevasse(2);
-						if(this.casesAdjacentes.get(Directions.DROITE).isVisitee() == true && this.casesAdjacentes.get(Directions.DROITE).isVent() == false) {
-							nouvellesCasesAdjacentes.get(Directions.DROITE).setCrevasse(0);
-						}
-					}
-
-					if (capteur.isOdeur() == true && this.casesAdjacentes.get(Directions.DROITE).isOdeur() == true) {
-						nouvellesCasesAdjacentes.get(Directions.DROITE).setMonstre(1);
-						if (nouvellesCasesAdjacentes.get(Directions.GAUCHE).isValable()) nouvellesCasesAdjacentes.get(Directions.GAUCHE).setVide();
-					}
-					if (capteur.isVent() == true && this.casesAdjacentes.get(Directions.GAUCHE).isVent() == true) {
-						nouvellesCasesAdjacentes.get(Directions.DROITE).setCrevasse(1);
-						if (nouvellesCasesAdjacentes.get(Directions.GAUCHE).isValable()) nouvellesCasesAdjacentes.get(Directions.GAUCHE).setVide();
-
-					}
-					if (capteur.isVent()==true && this.casesAdjacentes.get(Directions.DROITE).isOdeur()==true) {
-						nouvellesCasesAdjacentes.get(Directions.DROITE).setVide();
-					}
-					if (capteur.isOdeur()==true && this.casesAdjacentes.get(Directions.DROITE).isVent()==true) {
-						nouvellesCasesAdjacentes.get(Directions.DROITE).setVide();
-					}	
-				} 
-
-				//Modification des parametres de la case voisine basse
-				if (nouvellesCasesAdjacentes.get(Directions.BAS).isValable()) {
-					nouvellesCasesAdjacentes.get(Directions.BAS).setVisitee(true);
-					if(!this.casePrecedente.isOdeur() && !this.casePrecedente.isVent()) nouvellesCasesAdjacentes.get(Directions.BAS).setVide();
-					if(this.casePrecedente.isOdeur()) nouvellesCasesAdjacentes.get(Directions.BAS).setOdeur(true);
-					if(this.casePrecedente.isVent()) nouvellesCasesAdjacentes.get(Directions.BAS).setVent(true);
+				//Prio numero 2 : Tirer sur les monstres là ou pas de crevasse pour ensuite s'y rendre
+				if(!foret.grille[i][j].isVisitee()
+						&& foret.grille[i][j].getMonstre() == 2
+						&& foret.grille[i][j].getCrevasse() == 0) {
+					casesCiblesPourTirer.add(foret.grille[i][j]);
 				}
-
 			}
-			// l'agent s'est déplacé vers le bas
-			if(this.effecteur.getDirection() == Directions.BAS) {
-				
-				// Modification des parametres de la case voisine Basse
-				if (nouvellesCasesAdjacentes.get(Directions.BAS).isValable()) {
-					
-					if(capteur.isOdeur() == true) {
-						nouvellesCasesAdjacentes.get(Directions.BAS).setMonstre(2);
-					}
-					if(capteur.isVent() == true) {
-						nouvellesCasesAdjacentes.get(Directions.BAS).setCrevasse(2);
-					}
-				}
-				
-				// Modification des parametres de la case voisine gauche
-				if (nouvellesCasesAdjacentes.get(Directions.GAUCHE).isValable()) {
-					if(capteur.isOdeur() == true) {
-						nouvellesCasesAdjacentes.get(Directions.GAUCHE).setMonstre(2);
-						if(this.casesAdjacentes.get(Directions.GAUCHE).isVisitee() == true && this.casesAdjacentes.get(Directions.GAUCHE).isOdeur() == false) {
-							nouvellesCasesAdjacentes.get(Directions.GAUCHE).setMonstre(0);
-						}
-					}
-					if(capteur.isVent() == true) {
-						nouvellesCasesAdjacentes.get(Directions.GAUCHE).setCrevasse(2);
-						if(this.casesAdjacentes.get(Directions.GAUCHE).isVisitee() == true && this.casesAdjacentes.get(Directions.GAUCHE).isVent() == false) {
-							nouvellesCasesAdjacentes.get(Directions.GAUCHE).setCrevasse(0);
-						}
-					}
-					
-					if (capteur.isOdeur() == true && this.casesAdjacentes.get(Directions.GAUCHE).isOdeur() == true) {
-						nouvellesCasesAdjacentes.get(Directions.GAUCHE).setMonstre(1);
-						if (nouvellesCasesAdjacentes.get(Directions.DROITE).isValable()) nouvellesCasesAdjacentes.get(Directions.DROITE).setVide();
-					}
-					if (capteur.isVent() == true && this.casesAdjacentes.get(Directions.GAUCHE).isVent() == true) {
-						nouvellesCasesAdjacentes.get(Directions.GAUCHE).setCrevasse(1);
-						if (nouvellesCasesAdjacentes.get(Directions.DROITE).isValable()) nouvellesCasesAdjacentes.get(Directions.DROITE).setVide();
-						
-					}
-					if (capteur.isVent()==true && this.casesAdjacentes.get(Directions.GAUCHE).isOdeur()==true) {
-						nouvellesCasesAdjacentes.get(Directions.GAUCHE).setVide();
-					}
-					if (capteur.isOdeur()==true && this.casesAdjacentes.get(Directions.GAUCHE).isVent()==true) {
-						nouvellesCasesAdjacentes.get(Directions.GAUCHE).setVide();
-					}	
-				} 
-				
-				// Modification des parametres de la case voisine Droite
-				if (nouvellesCasesAdjacentes.get(Directions.DROITE).isValable()) {
-					if(capteur.isOdeur() == true) {
-						nouvellesCasesAdjacentes.get(Directions.DROITE).setMonstre(2);
-						if(this.casesAdjacentes.get(Directions.DROITE).isVisitee() == true && this.casesAdjacentes.get(Directions.DROITE).isOdeur() == false) {
-							nouvellesCasesAdjacentes.get(Directions.DROITE).setMonstre(0);
-						}
-					}
-					if(capteur.isVent() == true) {
-						nouvellesCasesAdjacentes.get(Directions.DROITE).setCrevasse(2);
-						if(this.casesAdjacentes.get(Directions.DROITE).isVisitee() == true && this.casesAdjacentes.get(Directions.DROITE).isVent() == false) {
-							nouvellesCasesAdjacentes.get(Directions.DROITE).setCrevasse(0);
-						}
-					}
-					
-					if (capteur.isOdeur() == true && this.casesAdjacentes.get(Directions.DROITE).isOdeur() == true) {
-						nouvellesCasesAdjacentes.get(Directions.DROITE).setMonstre(1);
-						if (nouvellesCasesAdjacentes.get(Directions.GAUCHE).isValable()) nouvellesCasesAdjacentes.get(Directions.GAUCHE).setVide();
-					}
-					if (capteur.isVent() == true && this.casesAdjacentes.get(Directions.DROITE).isVent() == true) {
-						nouvellesCasesAdjacentes.get(Directions.DROITE).setCrevasse(1);
-						if (nouvellesCasesAdjacentes.get(Directions.GAUCHE).isValable()) nouvellesCasesAdjacentes.get(Directions.GAUCHE).setVide();
-						
-					}
-					if (capteur.isVent()==true && this.casesAdjacentes.get(Directions.DROITE).isOdeur()==true) {
-						nouvellesCasesAdjacentes.get(Directions.DROITE).setVide();
-					}
-					if (capteur.isOdeur()==true && this.casesAdjacentes.get(Directions.DROITE).isVent()==true) {
-						nouvellesCasesAdjacentes.get(Directions.DROITE).setVide();
-					}	
-				} 
-				
-				//Modification des parametres de la case voisine haute
-				if (nouvellesCasesAdjacentes.get(Directions.HAUT).isValable()) {
-					nouvellesCasesAdjacentes.get(Directions.HAUT).setVisitee(true);
-					if(!this.casePrecedente.isOdeur() && !this.casePrecedente.isVent()) nouvellesCasesAdjacentes.get(Directions.HAUT).setVide();
-					if(this.casePrecedente.isOdeur()) nouvellesCasesAdjacentes.get(Directions.HAUT).setOdeur(true);
-					if(this.casePrecedente.isVent()) nouvellesCasesAdjacentes.get(Directions.HAUT).setVent(true);
-				}
-				
-			}
-			// l'agent s'est déplacé vers la droite
-			if(this.effecteur.getDirection() == Directions.DROITE) {
-				
-				// Modification des parametres de la case voisine droite
-				if (nouvellesCasesAdjacentes.get(Directions.DROITE).isValable()) {
-					
-					if(capteur.isOdeur() == true) {
-						nouvellesCasesAdjacentes.get(Directions.DROITE).setMonstre(2);
-					}
-					if(capteur.isVent() == true) {
-						nouvellesCasesAdjacentes.get(Directions.DROITE).setCrevasse(2);
-					}
-				}
-				
-				// Modification des parametres de la case voisine basse
-				if (nouvellesCasesAdjacentes.get(Directions.BAS).isValable()) {
-					if(capteur.isOdeur() == true) {
-						nouvellesCasesAdjacentes.get(Directions.BAS).setMonstre(2);
-						if(this.casesAdjacentes.get(Directions.BAS).isVisitee() == true && this.casesAdjacentes.get(Directions.BAS).isOdeur() == false) {
-							nouvellesCasesAdjacentes.get(Directions.BAS).setMonstre(0);
-						}
-					}
-					if(capteur.isVent() == true) {
-						nouvellesCasesAdjacentes.get(Directions.BAS).setCrevasse(2);
-						if(this.casesAdjacentes.get(Directions.BAS).isVisitee() == true && this.casesAdjacentes.get(Directions.BAS).isVent() == false) {
-							nouvellesCasesAdjacentes.get(Directions.BAS).setCrevasse(0);
-						}
-					}
-					
-					if (capteur.isOdeur() == true && this.casesAdjacentes.get(Directions.BAS).isOdeur() == true) {
-						nouvellesCasesAdjacentes.get(Directions.BAS).setMonstre(1);
-						if (nouvellesCasesAdjacentes.get(Directions.HAUT).isValable()) nouvellesCasesAdjacentes.get(Directions.HAUT).setVide();
-					}
-					if (capteur.isVent() == true && this.casesAdjacentes.get(Directions.BAS).isVent() == true) {
-						nouvellesCasesAdjacentes.get(Directions.BAS).setCrevasse(1);
-						if (nouvellesCasesAdjacentes.get(Directions.HAUT).isValable()) nouvellesCasesAdjacentes.get(Directions.HAUT).setVide();
-						
-					}
-					if (capteur.isVent()==true && this.casesAdjacentes.get(Directions.BAS).isOdeur()==true) {
-						nouvellesCasesAdjacentes.get(Directions.BAS).setVide();
-					}
-					if (capteur.isOdeur()==true && this.casesAdjacentes.get(Directions.BAS).isVent()==true) {
-						nouvellesCasesAdjacentes.get(Directions.BAS).setVide();
-					}	
-				} 
-				
-				// Modification des parametres de la case voisine haute
-				if (nouvellesCasesAdjacentes.get(Directions.HAUT).isValable()) {
-					if(capteur.isOdeur() == true) {
-						nouvellesCasesAdjacentes.get(Directions.HAUT).setMonstre(2);
-						if(this.casesAdjacentes.get(Directions.HAUT).isVisitee() == true && this.casesAdjacentes.get(Directions.HAUT).isOdeur() == false) {
-							nouvellesCasesAdjacentes.get(Directions.HAUT).setMonstre(0);
-						}
-					}
-					if(capteur.isVent() == true) {
-						nouvellesCasesAdjacentes.get(Directions.HAUT).setCrevasse(2);
-						if(this.casesAdjacentes.get(Directions.HAUT).isVisitee() == true && this.casesAdjacentes.get(Directions.HAUT).isVent() == false) {
-							nouvellesCasesAdjacentes.get(Directions.HAUT).setCrevasse(0);
-						}
-					}
-					
-					if (capteur.isOdeur() == true && this.casesAdjacentes.get(Directions.HAUT).isOdeur() == true) {
-						nouvellesCasesAdjacentes.get(Directions.HAUT).setMonstre(1);
-						if (nouvellesCasesAdjacentes.get(Directions.BAS).isValable()) nouvellesCasesAdjacentes.get(Directions.BAS).setVide();
-					}
-					if (capteur.isVent() == true && this.casesAdjacentes.get(Directions.HAUT).isVent() == true) {
-						nouvellesCasesAdjacentes.get(Directions.HAUT).setCrevasse(1);
-						if (nouvellesCasesAdjacentes.get(Directions.BAS).isValable()) nouvellesCasesAdjacentes.get(Directions.BAS).setVide();
-						
-					}
-					if (capteur.isVent()==true && this.casesAdjacentes.get(Directions.HAUT).isOdeur()==true) {
-						nouvellesCasesAdjacentes.get(Directions.HAUT).setVide();
-					}
-					if (capteur.isOdeur()==true && this.casesAdjacentes.get(Directions.HAUT).isVent()==true) {
-						nouvellesCasesAdjacentes.get(Directions.HAUT).setVide();
-					}	
-				} 
-				
-				//Modification des parametres de la case voisine basse
-				if (nouvellesCasesAdjacentes.get(Directions.GAUCHE).isValable()) {
-					nouvellesCasesAdjacentes.get(Directions.GAUCHE).setVisitee(true);
-					if(!this.casePrecedente.isOdeur() && !this.casePrecedente.isVent()) nouvellesCasesAdjacentes.get(Directions.GAUCHE).setVide();
-					if(this.casePrecedente.isOdeur()) nouvellesCasesAdjacentes.get(Directions.GAUCHE).setOdeur(true);
-					if(this.casePrecedente.isVent()) nouvellesCasesAdjacentes.get(Directions.GAUCHE).setVent(true);
-				}
-				
-			}
-			// l'agent s'est déplacé vers la gauche
-			if(this.effecteur.getDirection() == Directions.GAUCHE) {
-				
-				// Modification des parametres de la case voisine gauche
-				if (nouvellesCasesAdjacentes.get(Directions.GAUCHE).isValable()) {
-					
-					if(capteur.isOdeur() == true) {
-						nouvellesCasesAdjacentes.get(Directions.GAUCHE).setMonstre(2);
-					}
-					if(capteur.isVent() == true) {
-						nouvellesCasesAdjacentes.get(Directions.GAUCHE).setCrevasse(2);
-					}
-				}
-				
-				// Modification des parametres de la case voisine basse
-				if (nouvellesCasesAdjacentes.get(Directions.BAS).isValable()) {
-					if(capteur.isOdeur() == true) {
-						nouvellesCasesAdjacentes.get(Directions.BAS).setMonstre(2);
-						if(this.casesAdjacentes.get(Directions.BAS).isVisitee() == true && this.casesAdjacentes.get(Directions.BAS).isOdeur() == false) {
-							nouvellesCasesAdjacentes.get(Directions.BAS).setMonstre(0);
-						}
-					}
-					if(capteur.isVent() == true) {
-						nouvellesCasesAdjacentes.get(Directions.BAS).setCrevasse(2);
-						if(this.casesAdjacentes.get(Directions.BAS).isVisitee() == true && this.casesAdjacentes.get(Directions.BAS).isVent() == false) {
-							nouvellesCasesAdjacentes.get(Directions.BAS).setCrevasse(0);
-						}
-					}
-					
-					if (capteur.isOdeur() == true && this.casesAdjacentes.get(Directions.BAS).isOdeur() == true) {
-						nouvellesCasesAdjacentes.get(Directions.BAS).setMonstre(1);
-						if (nouvellesCasesAdjacentes.get(Directions.HAUT).isValable()) nouvellesCasesAdjacentes.get(Directions.HAUT).setVide();
-					}
-					if (capteur.isVent() == true && this.casesAdjacentes.get(Directions.BAS).isVent() == true) {
-						nouvellesCasesAdjacentes.get(Directions.BAS).setCrevasse(1);
-						if (nouvellesCasesAdjacentes.get(Directions.HAUT).isValable()) nouvellesCasesAdjacentes.get(Directions.HAUT).setVide();
-						
-					}
-					if (capteur.isVent()==true && this.casesAdjacentes.get(Directions.BAS).isOdeur()==true) {
-						nouvellesCasesAdjacentes.get(Directions.BAS).setVide();
-					}
-					if (capteur.isOdeur()==true && this.casesAdjacentes.get(Directions.BAS).isVent()==true) {
-						nouvellesCasesAdjacentes.get(Directions.BAS).setVide();
-					}	
-				} 
-				
-				// Modification des parametres de la case voisine haute
-				if (nouvellesCasesAdjacentes.get(Directions.HAUT).isValable()) {
-					if(capteur.isOdeur() == true) {
-						nouvellesCasesAdjacentes.get(Directions.HAUT).setMonstre(2);
-						if(this.casesAdjacentes.get(Directions.HAUT).isVisitee() == true && this.casesAdjacentes.get(Directions.HAUT).isOdeur() == false) {
-							nouvellesCasesAdjacentes.get(Directions.HAUT).setMonstre(0);
-						}
-					}
-					if(capteur.isVent() == true) {
-						nouvellesCasesAdjacentes.get(Directions.HAUT).setCrevasse(2);
-						if(this.casesAdjacentes.get(Directions.HAUT).isVisitee() == true && this.casesAdjacentes.get(Directions.HAUT).isVent() == false) {
-							nouvellesCasesAdjacentes.get(Directions.HAUT).setCrevasse(0);
-						}
-					}
-					
-					if (capteur.isOdeur() == true && this.casesAdjacentes.get(Directions.HAUT).isOdeur() == true) {
-						nouvellesCasesAdjacentes.get(Directions.HAUT).setMonstre(1);
-						if (nouvellesCasesAdjacentes.get(Directions.BAS).isValable()) nouvellesCasesAdjacentes.get(Directions.BAS).setVide();
-					}
-					if (capteur.isVent() == true && this.casesAdjacentes.get(Directions.HAUT).isVent() == true) {
-						nouvellesCasesAdjacentes.get(Directions.HAUT).setCrevasse(1);
-						if (nouvellesCasesAdjacentes.get(Directions.BAS).isValable()) nouvellesCasesAdjacentes.get(Directions.BAS).setVide();
-						
-					}
-					if (capteur.isVent()==true && this.casesAdjacentes.get(Directions.HAUT).isOdeur()==true) {
-						nouvellesCasesAdjacentes.get(Directions.HAUT).setVide();
-					}
-					if (capteur.isOdeur()==true && this.casesAdjacentes.get(Directions.HAUT).isVent()==true) {
-						nouvellesCasesAdjacentes.get(Directions.HAUT).setVide();
-					}	
-				} 
-				
-				//Modification des parametres de la case voisine droite
-				if (nouvellesCasesAdjacentes.get(Directions.DROITE).isValable()) {
-					nouvellesCasesAdjacentes.get(Directions.DROITE).setVisitee(true);
-					if(!this.casePrecedente.isOdeur() && !this.casePrecedente.isVent()) nouvellesCasesAdjacentes.get(Directions.DROITE).setVide();
-					if(this.casePrecedente.isOdeur()) nouvellesCasesAdjacentes.get(Directions.DROITE).setOdeur(true);
-					if(this.casePrecedente.isVent()) nouvellesCasesAdjacentes.get(Directions.DROITE).setVent(true);
-				}
-				
-			}
-
-
-		}
-	}
-
-	protected List<Case> initialiserCasesAdjacentes() {
-		//Creation de la liste des cases adjacentes
-		List<Case> nouvellesCasesAdjacentes = new ArrayList<>();		
-		for(int i=0; i<4; i++) {
-			nouvellesCasesAdjacentes.add(new Case());
-		}
-		//Met a jour l'etat valable de chaque case adjacente
-		//en fonction de leur position par rapport aux bordures
-		if (this.x == 0) {			
-			nouvellesCasesAdjacentes.get(Directions.GAUCHE).setValable(false);					
-		}
-		if (this.x == Foret.dimension - 1) {
-			nouvellesCasesAdjacentes.get(Directions.DROITE).setValable(false);			
 		} 
-		if (this.y == 0) {
-			nouvellesCasesAdjacentes.get(Directions.HAUT).setValable(false);				
-		}
-		if (this.y == Foret.dimension - 1) {
-			nouvellesCasesAdjacentes.get(Directions.BAS).setValable(false);				
-		}
-		//Pour chaque case adjacente :
-		for(int index = 0; index < nouvellesCasesAdjacentes.size(); index++) {
-			//Si la case est valable, on "set" sa position
-			if(nouvellesCasesAdjacentes.get(index).isValable()) {
-				switch(index) {
-				case Directions.HAUT:
-					nouvellesCasesAdjacentes.get(Directions.HAUT).getPosition().add(x);		
-					nouvellesCasesAdjacentes.get(Directions.HAUT).getPosition().add(y-1);
-					break;
-				case Directions.BAS:
-					nouvellesCasesAdjacentes.get(Directions.BAS).getPosition().add(x);		
-					nouvellesCasesAdjacentes.get(Directions.BAS).getPosition().add(y+1);
-					break;
-				case Directions.DROITE:
-					nouvellesCasesAdjacentes.get(Directions.DROITE).getPosition().add(x+1);		
-					nouvellesCasesAdjacentes.get(Directions.DROITE).getPosition().add(y);
-					break;
-				case Directions.GAUCHE:
-					nouvellesCasesAdjacentes.get(Directions.GAUCHE).getPosition().add(x-1);		
-					nouvellesCasesAdjacentes.get(Directions.GAUCHE).getPosition().add(y);
-					break;
-				}
-				//Si la case est valable ET visitee, on met a jour ses diferents etats
-				if(nouvellesCasesAdjacentes.get(index).isVisitee()) {
-					nouvellesCasesAdjacentes.set(index, foret.grille[nouvellesCasesAdjacentes.get(index).getPosition().get(0)]
-							[nouvellesCasesAdjacentes.get(index).getPosition().get(1)]);
-				}		
+		Case temp = null;  
+		for(int i=0; i < casesCiblesPourTirer.size(); i++) {
+			for(int j=1; j < (casesCiblesPourTirer.size()-i); j++){  
+				if(casesCiblesPourTirer.get(j-1).getDanger() > casesCiblesPourTirer.get(j).getDanger()){
+					//echanges des elements
+					temp = casesCiblesPourTirer.get(j-1);  
+					casesCiblesPourTirer.set(j-1, casesCiblesPourTirer.get(j));  
+					casesCiblesPourTirer.set(j, temp);  
+				} 
 			}
 		}
-		return nouvellesCasesAdjacentes;
 	}
 
+	static void tri_bulle(int[] tab)
+	{  
+		int taille = tab.length;  
+		int tmp = 0;  
+		for(int i=0; i < taille; i++) 
+		{
+			for(int j=1; j < (taille-i); j++)
+			{  
+				if(tab[j-1] > tab[j])
+				{
+					//echanges des elements
+					tmp = tab[j-1];  
+					tab[j-1] = tab[j];  
+					tab[j] = tmp;  
+				}
+
+			}
+		}
+	}
+
+	protected void interpreterConnaissances() {
+
+		for(int x = 0; x < Foret.dimension; x++) {
+			for(int y = 0; y < Foret.dimension; y++) {
+				if(!foret.grille[x][y].isVisitee()) {
+					foret.grille[x][y].etudierAdjacence();
+				}
+			}
+		}
+	}
+
+	public Case getCasePrecedente() {
+		return casePrecedente;
+	}
+
+	public void setCasePrecedente(Case casePrecedente) {
+		this.casePrecedente = casePrecedente;
+	}
+
+	public List<Case> getCasesConnues() {
+		return casesConnues;
+	}
+
+	public void setCasesConnues(List<Case> casesConnues) {
+		this.casesConnues = casesConnues;
+	}
+
+	public int getPerformance() {
+		return performance;
+	}
+
+	public void setPerformance(int performance) {
+		this.performance = performance;
+	}
+
+	public Effecteur getEffecteur() {
+		return effecteur;
+	}
+
+	public void setEffecteur(Effecteur effecteur) {
+		this.effecteur = effecteur;
+	}
+
+	public Capteur getCapteur() {
+		return capteur;
+	}
+
+	public void setCapteur(Capteur capteur) {
+		this.capteur = capteur;
+	}
+
+	public Foret getForet() {
+		return foret;
+	}
+
+	public void setForet(Foret foret) {
+		this.foret = foret;
+	}
 
 	public int getX() {
 		return x;
