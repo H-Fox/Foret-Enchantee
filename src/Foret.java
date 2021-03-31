@@ -87,6 +87,12 @@ public class Foret {
 		}
 
 		//Placer vent et odeur
+		MAJForet();
+	}
+	
+	public void MAJForet() {
+		
+		//Placer vent et odeur
 		for (int i = 0; i < Foret.dimension; i++) {
 			for (int j = 0; j < Foret.dimension; j++) {
 				for(Element element : grille[i][j].getContenu()) {

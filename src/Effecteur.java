@@ -2,32 +2,39 @@ import java.util.List;
 
 public class Effecteur {
 	
-	protected List<Integer> position;
-	protected int priorite = -1;
+	protected Case caseCiblee;
+	protected int priorite;
 	protected boolean tirer = false;
 	
-	public Effecteur(List<Integer> _position, int _priorite, boolean _tirer) {
-		position = _position;
+	public Effecteur(Case _caseCiblee,int _priorite, boolean _tirer) {
+		caseCiblee = _caseCiblee;
 		priorite = _priorite;
 		tirer = _tirer;
 	}
+
+
 	
 	public int getPriorite() {
 		return priorite;
 	}
+
+
 
 	public void setPriorite(int priorite) {
 		this.priorite = priorite;
 	}
 
 
-	public List<Integer> getPosition() {
-		return position;
+
+	public Case getCaseCiblee() {
+		return caseCiblee;
 	}
 
-	public void setPosition(List<Integer> position) {
-		this.position = position;
+
+	public void setCaseCiblee(Case caseCiblee) {
+		this.caseCiblee = caseCiblee;
 	}
+
 
 	public boolean isTirer() {
 		return tirer;

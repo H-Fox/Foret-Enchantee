@@ -26,6 +26,7 @@ public class Case {
 	private List<Integer> position;
 
 	public Case() {
+		
 		odeur = false;
 		vent = false;
 		monstre = 0;
@@ -41,55 +42,55 @@ public class Case {
 	}
 
 	public void etudierAdjacence() {
-		
-		initialiserCasesAdjacentes();
-		int compteurOdeur = 0;
-		int compteurVent = 0;
-		int compteurCaseVisitee = 0;
-		for(Case caseTraitee : this.casesAdjacentes) {			
-			if(caseTraitee.isValable()) {
-				//Valable
-				if(caseTraitee.isVisitee()) {
-					//Valable ET visitee
-					compteurCaseVisitee++;
-					if(caseTraitee.isOdeur()) {
-						compteurOdeur++;
-					}
-					if(caseTraitee.isVent()) {
-						compteurVent++;
-					}
-				}
-			}
-		}
-		//Regle 1 : Si les cases connues de la périphérie d'une case non visitee
-		//ne contiennent pas toutes des odeurs, alors il n'y a pas de monstre dans 
-		//cette case non visitee
-		//Sinon il y a potentiellement un monstre
-		if(compteurOdeur == compteurCaseVisitee) {
-			this.monstre = 2; //Monstre Potentiel
-			this.danger = Math.max(compteurVent, compteurOdeur);
-		}
-		else {
-			this.monstre = 0;
-		}
-		//Regle 2 : Si les cases connues de la périphérie d'une case non visitee
-		//ne contiennent pas toutes du vent, alors il n'y a pas de crevasse dans 
-		//cette case non visitee
-		//Sinon il y a potentiellement un crevasse
-		if(compteurVent == compteurCaseVisitee) {
-			this.crevasse = 2; //Crevasse Potentiel
-			this.danger = Math.max(compteurVent, compteurOdeur);
-		}
-		else {
-			this.crevasse = 0;
-		}
-		//Regle 3 : Si la case non visitee n'a ni de monstre potentiel, ni de crevasse 
-		//potentielle, alors elle est vide
-		if(this.crevasse == 0 && this.monstre == 0) {
-			this.vide = true;
-			this.danger = 0;
-		}
-		
+//		
+//		initialiserCasesAdjacentes();
+//		int compteurOdeur = 0;
+//		int compteurVent = 0;
+//		int compteurCaseVisitee = 0;
+//		for(Case caseTraitee : this.casesAdjacentes) {			
+//			if(caseTraitee.isValable()) {
+//				//Valable
+//				if(caseTraitee.isVisitee()) {
+//					//Valable ET visitee
+//					compteurCaseVisitee++;
+//					if(caseTraitee.isOdeur()) {
+//						compteurOdeur++;
+//					}
+//					if(caseTraitee.isVent()) {
+//						compteurVent++;
+//					}
+//				}
+//			}
+//		}
+//		//Regle 1 : Si les cases connues de la périphérie d'une case non visitee
+//		//ne contiennent pas toutes des odeurs, alors il n'y a pas de monstre dans 
+//		//cette case non visitee
+//		//Sinon il y a potentiellement un monstre
+//		if(compteurOdeur == compteurCaseVisitee) {
+//			this.monstre = 2; //Monstre Potentiel
+//			this.danger = Math.max(compteurVent, compteurOdeur);
+//		}
+//		else {
+//			this.monstre = 0;
+//		}
+//		//Regle 2 : Si les cases connues de la périphérie d'une case non visitee
+//		//ne contiennent pas toutes du vent, alors il n'y a pas de crevasse dans 
+//		//cette case non visitee
+//		//Sinon il y a potentiellement un crevasse
+//		if(compteurVent == compteurCaseVisitee) {
+//			this.crevasse = 2; //Crevasse Potentiel
+//			this.danger = Math.max(compteurVent, compteurOdeur);
+//		}
+//		else {
+//			this.crevasse = 0;
+//		}
+//		//Regle 3 : Si la case non visitee n'a ni de monstre potentiel, ni de crevasse 
+//		//potentielle, alors elle est vide
+//		if(this.crevasse == 0 && this.monstre == 0) {
+//			this.vide = true;
+//			this.danger = 0;
+//		}
+//		
 	}
 	
 	public boolean isVide() {
@@ -100,7 +101,7 @@ public class Case {
 		this.vide = vide;
 	}
 
-	private void initialiserCasesAdjacentes() {
+	protected void initialiserCasesAdjacentes() {
 		
 		List<Case> casesAdjacentes = new ArrayList<>();
 		
