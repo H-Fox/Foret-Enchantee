@@ -9,10 +9,11 @@ public class Foret {
 	protected Case[][] grille;
 	protected static int dimension = 2;
 	protected Agent joueur;
+	protected ForetGraphique affichage;
 
 	public Foret() {
-		
 		dimension++;
+		affichage = new ForetGraphique(dimension);
 		System.out.println(dimension);
 		joueur = new Agent(this);
 		grille = new Case[dimension][dimension];

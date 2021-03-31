@@ -7,6 +7,8 @@ public class Agent extends Element{
 
 	protected int x = -1;
 	protected int y = -1;
+	
+	protected boolean vivant;
 
 	protected Case casePrecedente;
 	protected List<Case> casesConnues;
@@ -21,9 +23,8 @@ public class Agent extends Element{
 
 	protected Foret foret;
 
-
-
 	public Agent(Foret foret) {
+		vivant = true;
 		listeActionsPossiblesPrio1 = new ArrayList<>();
 		listeActionsPossiblesPrio2 = new ArrayList<>();
 		listeActionsPossiblesPrio3 = new ArrayList<>();
@@ -31,6 +32,18 @@ public class Agent extends Element{
 		capteur = new Capteur();
 		casesConnues = new ArrayList<>();
 		this.foret = foret;
+	}
+	
+	protected void jouer() {
+		if(this.capteur.isBrillant()) {
+			vivant = false;
+		}
+		else {
+			interpreterConnaissances();
+			listerActionsPossibles();
+			choisirAction();
+			agir();
+		}
 	}
 
 	protected void agir() {
@@ -44,6 +57,7 @@ public class Agent extends Element{
 				deplacer(effecteur);
 				break;
 			case 3:
+				deplacer(effecteur);
 				break;
 			}
 		}
