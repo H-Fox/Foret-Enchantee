@@ -69,70 +69,75 @@ public class ForetGraphique extends JFrame {
 						crevasse = true;
 					}
 				}
-				if(foret.grille[i][j].isBrillante()) {
-					//Afficher portail
-					if(foret.grille[i][j].isJoueur()) {
-						mesCases[i][j].setIcon(AGENTPORTAIL);
+				mesCases[i][j].setIcon(CASENOIRE);
+				if(foret.grille[i][j].isVisitee()) {
+					if(foret.grille[i][j].isOdeur() && !foret.grille[i][j].isVent()) {
+						//Afficher odeur et pas vent
+						if(foret.grille[i][j].isJoueur()) {
+							mesCases[i][j].setIcon(AGENTODEUR);
+						}
+						else {
+							mesCases[i][j].setIcon(ODEUR);
+						}
 					}
-					else {
-						mesCases[i][j].setIcon(PORTAIL);
+					if(foret.grille[i][j].isOdeur() && foret.grille[i][j].isVent()) {
+						//Afficher monstre ET crevasse
+						if(foret.grille[i][j].isJoueur()) {
+							mesCases[i][j].setIcon(AGENTVENTODEUR);
+						}
+						else {
+							mesCases[i][j].setIcon(OdeurVent);
+						}
+					}
+					if(!foret.grille[i][j].isOdeur() && !foret.grille[i][j].isVent()) {
+						//checker si odeur/vent
+						if(foret.grille[i][j].isJoueur()) {
+							mesCases[i][j].setIcon(AGENT);
+						}
+						else {
+							mesCases[i][j].setIcon(null);
+						}
+					}
+					if (!foret.grille[i][j].isOdeur() && foret.grille[i][j].isVent()) {
+						//Afficher crevasse
+						if(foret.grille[i][j].isJoueur()) {
+							mesCases[i][j].setIcon(AGENTVENT);
+						}
+						else {
+							mesCases[i][j].setIcon(VENT);
+						}
 					}
 
 				}
+				else {
+					
+					if(foret.grille[i][j].isBrillante()) {
+						//Afficher portail
+						if(foret.grille[i][j].isJoueur()) {
+							mesCases[i][j].setIcon(AGENTPORTAIL);
+						}
+						else {
+							mesCases[i][j].setIcon(PORTAIL);
+						}
 
-				if(monstre && !crevasse) {
-					//Afficher monstre
-					mesCases[i][j].setIcon(MONSTRE);
-				}
-				if(monstre && crevasse) {
-					//Afficher monstre ET crevasse
-					mesCases[i][j].setIcon(MONSTRE);
-				}
-				if(!monstre && !crevasse) {
-					//checker si odeur/vent
-					mesCases[i][j].setIcon(null);
-				}
-				if (!monstre && crevasse) {
-					//Afficher crevasse
-					mesCases[i][j].setIcon(CREVASSE);
+					}
+
+					if(monstre && !crevasse) {
+						//Afficher monstre
+						mesCases[i][j].setIcon(MONSTRE);
+					}
+					if(monstre && crevasse) {
+						//Afficher monstre ET crevasse
+						mesCases[i][j].setIcon(MONSTRE);
+					}
+					
+					if (!monstre && crevasse) {
+						//Afficher crevasse
+						mesCases[i][j].setIcon(CREVASSE);
+					}
 				}
 
-				if(foret.grille[i][j].isOdeur() && !foret.grille[i][j].isVent()) {
-					//Afficher odeur et pas vent
-					if(foret.grille[i][j].isJoueur()) {
-						mesCases[i][j].setIcon(AGENTODEUR);
-					}
-					else {
-						mesCases[i][j].setIcon(ODEUR);
-					}
-				}
-				if(foret.grille[i][j].isOdeur() && foret.grille[i][j].isVent()) {
-					//Afficher monstre ET crevasse
-					if(foret.grille[i][j].isJoueur()) {
-						mesCases[i][j].setIcon(AGENTVENTODEUR);
-					}
-					else {
-						mesCases[i][j].setIcon(OdeurVent);
-					}
-				}
-				if(!foret.grille[i][j].isOdeur() && !foret.grille[i][j].isVent()) {
-					//checker si odeur/vent
-					if(foret.grille[i][j].isJoueur()) {
-						mesCases[i][j].setIcon(AGENT);
-					}
-					else {
-						mesCases[i][j].setIcon(null);
-					}
-				}
-				if (!foret.grille[i][j].isOdeur() && foret.grille[i][j].isVent()) {
-					//Afficher crevasse
-					if(foret.grille[i][j].isJoueur()) {
-						mesCases[i][j].setIcon(AGENTVENT);
-					}
-					else {
-						mesCases[i][j].setIcon(VENT);
-					}
-				}
+
 				this.repaint();
 			}
 		}

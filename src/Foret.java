@@ -13,7 +13,7 @@ public class Foret {
 
 	public Foret() {
 		dimension++;
-		affichage = new ForetGraphique(dimension);
+
 		System.out.println(dimension);
 		joueur = new Agent(this);
 		grille = new Case[dimension][dimension];
@@ -26,8 +26,9 @@ public class Foret {
 			}
 		}
 		initialiserGrille();
+		affichage = new ForetGraphique(dimension);
 	}
-	
+
 
 
 	/**
@@ -39,7 +40,7 @@ public class Foret {
 		//Placer joueur
 		int x = (int) (Math.random()*Foret.dimension);
 		int y = (int) (Math.random()*Foret.dimension);
-		
+
 		System.out.println("Placer joueur : "+x+", "+y);
 
 		grille[x][y].setJoueur(true);
@@ -54,16 +55,17 @@ public class Foret {
 		System.out.println("Placer portail : "+x+", "+y);
 
 		grille[x][y].setBrillante(true);
+		grille[x][y].getContenu().add(new Portail());
 
 		//Placer monstres et/ou crevasse
 		int nombreCasesARemplir = (int) (Math.random()*(Foret.dimension*Foret.dimension)); //Nombre de cases à remplir entre 0 et dimension²
-		//System.out.println("Nombre de cases a remplir : "+nombreCasesARemplir);
+		System.out.println("Nombre de cases a remplir : "+nombreCasesARemplir);
 		for (int i = 0; i < nombreCasesARemplir; i++) {
 
 			do {
 				x = (int) (Math.random()*Foret.dimension);
 				y = (int) (Math.random()*Foret.dimension);
-				//System.out.println("Placer element : "+x+", "+y);
+				System.out.println("Placer element : "+x+", "+y);
 			}
 			while(grille[x][y].isJoueur()
 					|| grille[x][y].isBrillante());
@@ -73,13 +75,13 @@ public class Foret {
 			switch(choix) {
 			case 0:
 				//Placer un monstre	
-				//System.out.println("Placer monstre : "+x+", "+y);
+				System.out.println("Placer monstre : "+x+", "+y);
 				grille[x][y].getContenu().add(new Monstre());
 				grille[x][y].setMonstre(1);
 				break;
 			case 1:
 				//Placer une crevasse	
-				//System.out.println("Placer crevasse : "+x+", "+y);
+				System.out.println("Placer crevasse : "+x+", "+y);
 				grille[x][y].getContenu().add(new Crevasse());
 				grille[x][y].setCrevasse(1);
 				break;
@@ -90,9 +92,9 @@ public class Foret {
 		//Placer vent et odeur
 		MAJForet();
 	}
-	
+
 	public void MAJForet() {
-		
+
 		//Placer vent et odeur
 		for (int i = 0; i < Foret.dimension; i++) {
 			for (int j = 0; j < Foret.dimension; j++) {
@@ -103,9 +105,12 @@ public class Foret {
 							switch(grille[i][j-1].getEtat()) {
 							case EtatsCases.VIDE:
 								grille[i][j-1].setEtat(EtatsCases.ODEUR);
+								grille[i][j-1].setOdeur(true);
 								break;
 							case EtatsCases.VENT:
 								grille[i][j-1].setEtat(EtatsCases.VENT_ODEUR);
+								grille[i][j-1].setOdeur(true);
+								grille[i][j-1].setVent(true);
 								break;							
 							}
 						}						
@@ -114,9 +119,12 @@ public class Foret {
 							switch(grille[i][j+1].getEtat()) {
 							case EtatsCases.VIDE:
 								grille[i][j+1].setEtat(EtatsCases.ODEUR);
+								grille[i][j+1].setOdeur(true);
 								break;
 							case EtatsCases.VENT:
 								grille[i][j+1].setEtat(EtatsCases.VENT_ODEUR);
+								grille[i][j+1].setVent(true);
+								grille[i][j+1].setOdeur(true);
 								break;	
 							}
 						}
@@ -125,9 +133,12 @@ public class Foret {
 							switch(grille[i+1][j].getEtat()) {
 							case EtatsCases.VIDE:
 								grille[i+1][j].setEtat(EtatsCases.ODEUR);
+								grille[i+1][j].setOdeur(true);
 								break;
 							case EtatsCases.VENT:
 								grille[i+1][j].setEtat(EtatsCases.VENT_ODEUR);
+								grille[i+1][j].setOdeur(true);
+								grille[i+1][j].setVent(true);
 								break;	
 							}
 						}
@@ -136,9 +147,12 @@ public class Foret {
 							switch(grille[i-1][j].getEtat()) {
 							case EtatsCases.VIDE:
 								grille[i-1][j].setEtat(EtatsCases.ODEUR);
+								grille[i-1][j].setOdeur(true);
 								break;
 							case EtatsCases.VENT:
 								grille[i-1][j].setEtat(EtatsCases.VENT_ODEUR);
+								grille[i-1][j].setOdeur(true);
+								grille[i-1][j].setVent(true);
 								break;
 							}
 						}
@@ -149,9 +163,12 @@ public class Foret {
 							switch(grille[i][j-1].getEtat()) {
 							case EtatsCases.VIDE:
 								grille[i][j-1].setEtat(EtatsCases.VENT);
+								grille[i][j-1].setVent(true);
 								break;
 							case EtatsCases.ODEUR:
 								grille[i][j-1].setEtat(EtatsCases.VENT_ODEUR);
+								grille[i][j-1].setVent(true);
+								grille[i][j-1].setOdeur(true);
 								break;
 							}
 						}						
@@ -160,9 +177,12 @@ public class Foret {
 							switch(grille[i][j+1].getEtat()) {
 							case EtatsCases.VIDE:
 								grille[i][j+1].setEtat(EtatsCases.VENT);
+								grille[i][j+1].setVent(true);
 								break;
 							case EtatsCases.ODEUR:
 								grille[i][j+1].setEtat(EtatsCases.VENT_ODEUR);
+								grille[i][j+1].setVent(true);
+								grille[i][j+1].setOdeur(true);
 								break;
 							}
 						}
@@ -171,9 +191,12 @@ public class Foret {
 							switch(grille[i+1][j].getEtat()) {
 							case EtatsCases.VIDE:
 								grille[i+1][j].setEtat(EtatsCases.VENT);
+								grille[i+1][j].setVent(true);
 								break;
 							case EtatsCases.ODEUR:
 								grille[i+1][j].setEtat(EtatsCases.VENT_ODEUR);
+								grille[i+1][j].setVent(true);
+								grille[i+1][j].setOdeur(true);
 								break;
 							}
 						}
@@ -182,9 +205,12 @@ public class Foret {
 							switch(grille[i-1][j].getEtat()) {
 							case EtatsCases.VIDE:
 								grille[i-1][j].setEtat(EtatsCases.VENT);
+								grille[i-1][j].setVent(true);
 								break;
 							case EtatsCases.ODEUR:
 								grille[i-1][j].setEtat(EtatsCases.VENT_ODEUR);
+								grille[i-1][j].setVent(true);
+								grille[i-1][j].setOdeur(true);
 								break;
 							}
 						}
@@ -195,12 +221,14 @@ public class Foret {
 	}
 
 	public void afficher() {
+		affichage.afficherGraphiquement(this);
 		System.out.println("Dimension dans afficher :"+ dimension);
 		System.out.println("Dimensions grille dans afficher : "+grille.length+", "+grille[0].length);
 		for (int i = 0; i < Foret.dimension; i++) {
 			for (int j = 0; j < Foret.dimension; j++) {
 				boolean monstre = false;
 				boolean crevasse = false;
+				boolean portail = false;
 				for(Element element : grille[i][j].getContenu()) {
 					if(element instanceof Monstre) {
 						monstre = true;
@@ -208,12 +236,103 @@ public class Foret {
 					if(element instanceof Crevasse) {
 						crevasse = true;
 					}
+					if(element instanceof Portail) {
+						portail = true;
+					}
 				}
-				System.out.print(monstre+", "+crevasse+", "+grille[i][j].getEtat()+"   ");
+				String cell = "  0 ";
+				String visitee = ", PV ";
+				String odeurVent = ", -- ";
+				if(crevasse) {
+					cell = "  C ";
+				}
+				if(monstre) {
+					cell = "  M ";
+				}
+				if(crevasse && monstre) {
+					cell = " M/C";
+				}
+				if(portail) {
+					cell = "  P ";
+				}
+				if(grille[i][j].isJoueur()) {
+					cell = "  J ";
+				}
+				if(grille[i][j].isVisitee()) {
+					visitee = ", V  ";
+				}
+				if(grille[i][j].isOdeur()) {
+					odeurVent = ", Od ";
+				}
+				if(grille[i][j].isVent()) {
+					odeurVent = ", Ve ";
+				}
+				if(grille[i][j].isOdeur() && grille[i][j].isVent()) {
+					odeurVent = ", O/V";
+				}
+				System.out.print("  "+cell+visitee+odeurVent);
+				//System.out.print("J = "+grille[i][j].isJoueur()+", M = "+monstre+", C = "+crevasse+", P = "+portail+"   ");
 			}
 			System.out.println();
 		}
 
+	}
+
+//	public void afficherDanger() {
+//		for (int i = 0; i < Foret.dimension; i++) {
+//			for (int j = 0; j < Foret.dimension; j++) {
+//				System.out.print(grille[i][j].getDanger()+" ");
+//			}
+//			System.out.println();
+//		}
+//	}
+
+
+
+	public Case[][] getGrille() {
+		return grille;
+	}
+
+
+
+	public void setGrille(Case[][] grille) {
+		this.grille = grille;
+	}
+
+
+
+	public static int getDimension() {
+		return dimension;
+	}
+
+
+
+	public static void setDimension(int dimension) {
+		Foret.dimension = dimension;
+	}
+
+
+
+	public Agent getJoueur() {
+		return joueur;
+	}
+
+
+
+	public void setJoueur(Agent joueur) {
+		this.joueur = joueur;
+	}
+
+
+
+	public ForetGraphique getAffichage() {
+		return affichage;
+	}
+
+
+
+	public void setAffichage(ForetGraphique affichage) {
+		this.affichage = affichage;
 	}
 
 }

@@ -29,9 +29,9 @@ public class Case {
 		
 		odeur = false;
 		vent = false;
-		monstre = 0;
-		crevasse = 0;
-		danger = 0;
+		monstre = -1;
+		crevasse = -1;
+		danger = 99;
 		valable = true;
 		contenu = new ArrayList<>();
 		joueur = false;
@@ -102,7 +102,7 @@ public class Case {
 	}
 
 	protected void initialiserCasesAdjacentes() {
-		
+//		System.out.println("initAdja");
 		List<Case> casesAdjacentes = new ArrayList<>();
 		
 		for(int i = 0; i < 4; i++) {
@@ -110,11 +110,12 @@ public class Case {
 			casesAdjacentes.add(new Case());
 			
 			if(i == Directions.BAS) {
-				if (this.getPosition().get(1) == Foret.dimension - 1) {			
+				if (this.getPosition().get(1) == Foret.dimension - 1) {	
 					casesAdjacentes.get(Directions.BAS).setValable(false);	
 				}
 				else {
 					casesAdjacentes.set(Directions.BAS, foret.grille[this.getPosition().get(0)][this.getPosition().get(1)+1]);
+					System.out.println();
 				}
 			}
 			if(i == Directions.HAUT) {
@@ -142,6 +143,8 @@ public class Case {
 				}
 			}
 		}
+		
+		this.casesAdjacentes = casesAdjacentes;
 	}
 
 	public Foret getForet() {
