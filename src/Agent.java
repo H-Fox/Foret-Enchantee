@@ -38,11 +38,11 @@ public class Agent extends Element{
 	 */
 	protected void jouer() {
 		if(this.capteur.isBrillant()) {		
-			performance += 10*Foret.dimension;
+			performance += 10*Foret.dimension*Foret.dimension;
 			gagne = true;
 		}
 		if(this.capteur.isCrevasse()) {
-			performance -= 10*Foret.dimension;
+			performance -= 10*Foret.dimension*Foret.dimension;
 			vivant = false;
 		}
 		else {

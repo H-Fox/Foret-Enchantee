@@ -33,6 +33,7 @@ public class Main {
 				capteur.capter(foret.getCaseCourrante(), foret);
 				agent.setCapteur(capteur);
 			}
+			System.out.println("\nLe score de l'agent est de : "+agent.getPerformance()+"\n");
 			if(!agent.vivant) {
 				System.out.println("____________________________MORT____________________________");
 				System.out.println("Le score de l'agent est de : "+agent.getPerformance());
