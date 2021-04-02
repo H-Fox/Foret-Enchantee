@@ -2,7 +2,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import constantes.Directions;
-import constantes.EtatsCases;
 
 public class Foret {
 
@@ -45,9 +44,9 @@ public class Foret {
 
 		grille[x][y].setJoueur(true);
 		grille[x][y].setVisitee(true);
+		grille[x][y].setDanger(0);
 		joueur.setX(x);
 		joueur.setY(y);
-		joueur.getCasesConnues().add(grille[x][y]);
 
 		//Placer portail
 		x = (int) (Math.random()*Foret.dimension);
@@ -101,118 +100,38 @@ public class Foret {
 				for(Element element : grille[i][j].getContenu()) {
 					if(element instanceof Monstre) {
 						//Ajout odeur UP
-						if(j-1 >= 0) {
-							switch(grille[i][j-1].getEtat()) {
-							case EtatsCases.VIDE:
-								grille[i][j-1].setEtat(EtatsCases.ODEUR);
+						if(j-1 >= 0 && !grille[i][j-1].isOdeur()) {							
 								grille[i][j-1].setOdeur(true);
-								break;
-							case EtatsCases.VENT:
-								grille[i][j-1].setEtat(EtatsCases.VENT_ODEUR);
-								grille[i][j-1].setOdeur(true);
-								grille[i][j-1].setVent(true);
-								break;							
-							}
 						}						
 						//Ajout odeur DOWN
-						if(j+1 <= Foret.dimension-1) {
-							switch(grille[i][j+1].getEtat()) {
-							case EtatsCases.VIDE:
-								grille[i][j+1].setEtat(EtatsCases.ODEUR);
-								grille[i][j+1].setOdeur(true);
-								break;
-							case EtatsCases.VENT:
-								grille[i][j+1].setEtat(EtatsCases.VENT_ODEUR);
-								grille[i][j+1].setVent(true);
-								grille[i][j+1].setOdeur(true);
-								break;	
-							}
+						if(j+1 <= Foret.dimension-1 && !grille[i][j+1].isOdeur()) {
+							grille[i][j+1].setOdeur(true);
 						}
 						//Ajout odeur RIGHT
-						if(i+1 <= Foret.dimension-1) {
-							switch(grille[i+1][j].getEtat()) {
-							case EtatsCases.VIDE:
-								grille[i+1][j].setEtat(EtatsCases.ODEUR);
-								grille[i+1][j].setOdeur(true);
-								break;
-							case EtatsCases.VENT:
-								grille[i+1][j].setEtat(EtatsCases.VENT_ODEUR);
-								grille[i+1][j].setOdeur(true);
-								grille[i+1][j].setVent(true);
-								break;	
-							}
+						if(i+1 <= Foret.dimension-1 && !grille[i+1][j].isOdeur()) {
+							grille[i+1][j].setOdeur(true);
 						}
 						//Ajout odeur LEFT
-						if(i-1 >= 0) {
-							switch(grille[i-1][j].getEtat()) {
-							case EtatsCases.VIDE:
-								grille[i-1][j].setEtat(EtatsCases.ODEUR);
-								grille[i-1][j].setOdeur(true);
-								break;
-							case EtatsCases.VENT:
-								grille[i-1][j].setEtat(EtatsCases.VENT_ODEUR);
-								grille[i-1][j].setOdeur(true);
-								grille[i-1][j].setVent(true);
-								break;
-							}
+						if(i-1 >= 0 && !grille[i-1][j].isOdeur()) {
+							grille[i-1][j].setOdeur(true);
 						}
 					}
 					if(element instanceof Crevasse) {
 						//Ajout vent UP
-						if(j-1 >= 0) {
-							switch(grille[i][j-1].getEtat()) {
-							case EtatsCases.VIDE:
-								grille[i][j-1].setEtat(EtatsCases.VENT);
-								grille[i][j-1].setVent(true);
-								break;
-							case EtatsCases.ODEUR:
-								grille[i][j-1].setEtat(EtatsCases.VENT_ODEUR);
-								grille[i][j-1].setVent(true);
-								grille[i][j-1].setOdeur(true);
-								break;
-							}
+						if(j-1 >= 0 && !grille[i][j-1].isVent()) {
+							grille[i][j-1].setVent(true);
 						}						
 						//Ajout vent DOWN
-						if(j+1 <= Foret.dimension-1) {
-							switch(grille[i][j+1].getEtat()) {
-							case EtatsCases.VIDE:
-								grille[i][j+1].setEtat(EtatsCases.VENT);
-								grille[i][j+1].setVent(true);
-								break;
-							case EtatsCases.ODEUR:
-								grille[i][j+1].setEtat(EtatsCases.VENT_ODEUR);
-								grille[i][j+1].setVent(true);
-								grille[i][j+1].setOdeur(true);
-								break;
-							}
+						if(j+1 <= Foret.dimension-1 && !grille[i][j+1].isVent()) {
+							grille[i][j+1].setVent(true);
 						}
 						//Ajout vent RIGHT
-						if(i+1 <= Foret.dimension-1) {
-							switch(grille[i+1][j].getEtat()) {
-							case EtatsCases.VIDE:
-								grille[i+1][j].setEtat(EtatsCases.VENT);
-								grille[i+1][j].setVent(true);
-								break;
-							case EtatsCases.ODEUR:
-								grille[i+1][j].setEtat(EtatsCases.VENT_ODEUR);
-								grille[i+1][j].setVent(true);
-								grille[i+1][j].setOdeur(true);
-								break;
-							}
+						if(i+1 <= Foret.dimension-1 && !grille[i+1][j].isVent()) {
+							grille[i+1][j].setVent(true);
 						}
 						//Ajout vent LEFT
-						if(i-1 >= 0) {
-							switch(grille[i-1][j].getEtat()) {
-							case EtatsCases.VIDE:
-								grille[i-1][j].setEtat(EtatsCases.VENT);
-								grille[i-1][j].setVent(true);
-								break;
-							case EtatsCases.ODEUR:
-								grille[i-1][j].setEtat(EtatsCases.VENT_ODEUR);
-								grille[i-1][j].setVent(true);
-								grille[i-1][j].setOdeur(true);
-								break;
-							}
+						if(i-1 >= 0 && !grille[i-1][j].isVent()) {
+							grille[i-1][j].setVent(true);
 						}
 					}
 				}
@@ -270,24 +189,14 @@ public class Foret {
 				if(grille[i][j].isOdeur() && grille[i][j].isVent()) {
 					odeurVent = ", O/V";
 				}
-				System.out.print("  "+cell+visitee+odeurVent);
+//				System.out.print("  "+cell+visitee+odeurVent);
+				System.out.print(" "+grille[i][j].getDanger());
 				//System.out.print("J = "+grille[i][j].isJoueur()+", M = "+monstre+", C = "+crevasse+", P = "+portail+"   ");
 			}
 			System.out.println();
 		}
 
 	}
-
-//	public void afficherDanger() {
-//		for (int i = 0; i < Foret.dimension; i++) {
-//			for (int j = 0; j < Foret.dimension; j++) {
-//				System.out.print(grille[i][j].getDanger()+" ");
-//			}
-//			System.out.println();
-//		}
-//	}
-
-
 
 	public Case[][] getGrille() {
 		return grille;

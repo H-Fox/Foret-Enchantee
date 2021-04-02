@@ -2,15 +2,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 import constantes.Directions;
-import constantes.EtatsCases;
 
 public class Case {
 
+	//Environnement dont fait partie la case
 	private Foret foret;
-
-	private int etat = EtatsCases.VIDE;
+	//Liste contenant les elements (monstre/crevasse) de la case
 	private List<Element> contenu;
+	//Niveau de danger estime par l'agent de la case
 	private int danger;
+	//Variables booleennes d'etats de la case (visibles par l'agent une fois la case visitee)
 	private boolean joueur;
 	private boolean brillante;
 	private boolean visitee;
@@ -18,20 +19,20 @@ public class Case {
 	private boolean odeur;
 	private boolean vent;
 	private boolean vide = false;
+	//Variables d'etats mises a jour par ce que capte l'agent
 	private int monstre; // 0 - pas de monstre / 1 - monstre / 2 - monstre potentiel
 	private int crevasse;// 0 - pas de crevasse / 1 - crevasse / 2 - crevasse potentielle
-
+	//Liste contenant les cases adjacentes à cette case
 	private List<Case> casesAdjacentes;
-
+	//Position de la case
 	private List<Integer> position;
 
-	public Case() {
-		
+	public Case() {		
 		odeur = false;
 		vent = false;
 		monstre = -1;
 		crevasse = -1;
-		danger = 99;
+		danger = 1;
 		valable = true;
 		contenu = new ArrayList<>();
 		joueur = false;
@@ -40,66 +41,8 @@ public class Case {
 		position = new ArrayList<>();
 		casesAdjacentes = new ArrayList<>();
 	}
-
-	public void etudierAdjacence() {
-//		
-//		initialiserCasesAdjacentes();
-//		int compteurOdeur = 0;
-//		int compteurVent = 0;
-//		int compteurCaseVisitee = 0;
-//		for(Case caseTraitee : this.casesAdjacentes) {			
-//			if(caseTraitee.isValable()) {
-//				//Valable
-//				if(caseTraitee.isVisitee()) {
-//					//Valable ET visitee
-//					compteurCaseVisitee++;
-//					if(caseTraitee.isOdeur()) {
-//						compteurOdeur++;
-//					}
-//					if(caseTraitee.isVent()) {
-//						compteurVent++;
-//					}
-//				}
-//			}
-//		}
-//		//Regle 1 : Si les cases connues de la périphérie d'une case non visitee
-//		//ne contiennent pas toutes des odeurs, alors il n'y a pas de monstre dans 
-//		//cette case non visitee
-//		//Sinon il y a potentiellement un monstre
-//		if(compteurOdeur == compteurCaseVisitee) {
-//			this.monstre = 2; //Monstre Potentiel
-//			this.danger = Math.max(compteurVent, compteurOdeur);
-//		}
-//		else {
-//			this.monstre = 0;
-//		}
-//		//Regle 2 : Si les cases connues de la périphérie d'une case non visitee
-//		//ne contiennent pas toutes du vent, alors il n'y a pas de crevasse dans 
-//		//cette case non visitee
-//		//Sinon il y a potentiellement un crevasse
-//		if(compteurVent == compteurCaseVisitee) {
-//			this.crevasse = 2; //Crevasse Potentiel
-//			this.danger = Math.max(compteurVent, compteurOdeur);
-//		}
-//		else {
-//			this.crevasse = 0;
-//		}
-//		//Regle 3 : Si la case non visitee n'a ni de monstre potentiel, ni de crevasse 
-//		//potentielle, alors elle est vide
-//		if(this.crevasse == 0 && this.monstre == 0) {
-//			this.vide = true;
-//			this.danger = 0;
-//		}
-//		
-	}
 	
-	public boolean isVide() {
-		return vide;
-	}
 
-	public void setVide(boolean vide) {
-		this.vide = vide;
-	}
 
 	protected void initialiserCasesAdjacentes() {
 //		System.out.println("initAdja");
@@ -147,6 +90,7 @@ public class Case {
 		this.casesAdjacentes = casesAdjacentes;
 	}
 
+	//Getters / Setters
 	public Foret getForet() {
 		return foret;
 	}
@@ -154,7 +98,13 @@ public class Case {
 	public void setForet(Foret foret) {
 		this.foret = foret;
 	}
+	public boolean isVide() {
+		return vide;
+	}
 
+	public void setVide(boolean vide) {
+		this.vide = vide;
+	}
 	public List<Case> getCasesAdjacentes() {
 		return casesAdjacentes;
 	}
@@ -211,14 +161,6 @@ public class Case {
 
 	public void setValable(boolean valable) {
 		this.valable = valable;
-	}
-
-	public int getEtat() {
-		return etat;
-	}
-
-	public void setEtat(int etat) {
-		this.etat = etat;
 	}
 
 	public List<Element> getContenu() {

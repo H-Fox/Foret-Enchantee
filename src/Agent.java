@@ -5,30 +5,29 @@ import constantes.Directions;
 
 public class Agent extends Element{
 
+	//Position de l'agent dans la foret
 	protected int x = -1;
 	protected int y = -1;
-	
+	//Etats de l'agent
 	protected boolean vivant;
 	protected boolean gagne = false;
-	
-	protected Case casePrecedente;
-	protected List<Case> casesConnues;
-
+	//Score de performance de l'agent
 	protected int performance = 0;
-
+	//Composants de l'agent
 	protected Effecteur effecteur;
+	protected Capteur capteur;
+	//Effecteurs potentiels par ordre de priorite
 	protected List<Effecteur> listeActionsPossiblesPrio1;
 	protected List<Effecteur> listeActionsPossiblesPrio2;
 	protected List<Effecteur> listeActionsPossiblesPrio3;
-	protected Capteur capteur;
-	
+	//Environnement de l'agent
+	protected Foret foret;
+	//Singleton
 	protected static Agent instance;
-
 	protected static Agent getInstance() {
 		return instance;
 	}
 	
-	protected Foret foret;
 
 	public Agent(Foret foret) {
 		
@@ -36,9 +35,7 @@ public class Agent extends Element{
 		listeActionsPossiblesPrio1 = new ArrayList<>();
 		listeActionsPossiblesPrio2 = new ArrayList<>();
 		listeActionsPossiblesPrio3 = new ArrayList<>();
-		casePrecedente = new Case();
 		capteur = new Capteur();
-		casesConnues = new ArrayList<>();
 		this.foret = foret;
 		instance = this;
 	}
@@ -96,9 +93,10 @@ public class Agent extends Element{
 				capteur.setCrevasse(true);
 			}
 		}
-		
-
 		eff.getCaseCiblee().setVisitee(true);
+		if(!capteur.isCrevasse()) {
+			eff.getCaseCiblee().setDanger(0);
+		}
 	}
 
 	protected void tirer(Effecteur eff) {
@@ -181,38 +179,27 @@ public class Agent extends Element{
 		listeActionsPossiblesPrio3 = actionsPossiblesPrio3;
 	}
 
-	static void tri_bulle(int[] tab)
-	{  
-		int taille = tab.length;  
-		int tmp = 0;  
-		for(int i=0; i < taille; i++) 
-		{
-			for(int j=1; j < (taille-i); j++)
-			{  
-				if(tab[j-1] > tab[j])
-				{
-					//echanges des elements
-					tmp = tab[j-1];  
-					tab[j-1] = tab[j];  
-					tab[j] = tmp;  
-				}
-
-			}
-		}
-	}
-
 	protected void interpreterConnaissances() {
 
 		for(int x = 0; x < Foret.dimension; x++) {
 			for(int y = 0; y < Foret.dimension; y++) {
 				if(!foret.grille[x][y].isVisitee()) {
-					//foret.grille[x][y].etudierAdjacence();
 					etudierAdjacence(foret.grille[x][y]);
 				}
 			}
 		}
 	}
-
+	/**
+	 * Met a jour l'etat de la case etudiee en fonction
+	 * de ce que l'agent sait sur les cases adjacentes 
+	 * de cette case etudiee.
+	 * 
+	 * (Mise a jour des faits)
+	 * 
+	 * @param:
+	 * 		caseEtudiee
+	 * @result Danger de la case etudiee mis a jour
+	 */
 	public void etudierAdjacence(Case caseEtudiee) {
 		
 		caseEtudiee.initialiserCasesAdjacentes();
@@ -237,71 +224,56 @@ public class Agent extends Element{
 					if(caseTraitee.isVent()) {
 						compteurVent++;
 					}
-//					System.out.println("Visitee "+caseTraitee.getPosition().toString()+" : cVent = "+compteurVent+", cOdeur = "+compteurOdeur);
 				}
 			}
 		}
-//		System.out.println(" : cVent = "+compteurVent+", cOdeur = "+compteurOdeur+", visitee :"+compteurCaseVisitee);
+		//Regles d'interpretation de l'environnement :
+		
+		//Regle 1 : 
+		//Si une case n'est pas visitee, 
+		//Alors elle est par conséquent potentiellement dangereuse.
 		if(compteurCaseVisitee == 0) {
-			caseEtudiee.setDanger(99);
+			caseEtudiee.setDanger(1);
 		}
-		//Regle 1 : Si les cases connues de la périphérie d'une case non visitee
-		//ne contiennent pas toutes des odeurs, alors il n'y a pas de monstre dans 
-		//cette case non visitee
+		//Regle 2 : 
+		//Si les cases connues de la périphérie d'une case non visitee
+		//		ne contiennent pas toutes des odeurs,
+		//Alors il n'y a pas de monstre dans cette case non visitee
 		//Sinon il y a potentiellement un monstre
 		if(compteurOdeur == compteurCaseVisitee && compteurOdeur != 0) {
-			caseEtudiee.setMonstre(2); //Monstre Potentiel
+			//Presence potentiel d'un monstre
+			caseEtudiee.setMonstre(2);
+			//Degre de danger en focntion nu nombre de cases odeur/vent trouvees
 			caseEtudiee.setDanger(Math.max(compteurVent, compteurOdeur));
-			if(Math.max(compteurVent,compteurOdeur)==0) {
-//				System.out.println("setDanger 1(egal compteur) = 0, "+caseEtudiee.getPosition().toString()
-//						+", CaseVisitees = "+compteurCaseVisitee+", compteurVent ="+compteurVent
-//						+", compteurOdeur ="+compteurOdeur);
-			}
 		}
+		//Regle 3 :
+		//Si les cases connues de la peripheries ne sont pas toutes "Odeur"
+		//Alors il n'y a pas de monstre
 		if(compteurOdeur != compteurCaseVisitee) {
 			caseEtudiee.setMonstre(0);
 		}
-		//Regle 2 : Si les cases connues de la périphérie d'une case non visitee
-		//ne contiennent pas toutes du vent, alors il n'y a pas de crevasse dans 
-		//cette case non visitee
+		//Regle 4 : 
+		//Si les cases connues de la périphérie d'une case non visitee
+		//		ne contiennent pas toutes du vent, 
+		//Alors il n'y a pas de crevasse dans cette case non visitee
 		//Sinon il y a potentiellement un crevasse
 		if(compteurVent == compteurCaseVisitee && compteurVent != 0) {
 			caseEtudiee.setCrevasse(2); //Crevasse Potentiel
-			caseEtudiee.setDanger(Math.max(compteurVent, compteurOdeur));
-			if(Math.max(compteurVent,compteurOdeur)==0) {
-//				System.out.println("setDanger 2(egal compteur) = 0, "+caseEtudiee.getPosition().toString()
-//						+", CaseVisitees = "+compteurCaseVisitee+", compteurVent ="+compteurVent
-//						+", compteurOdeur ="+compteurOdeur);
-			}
-			
+			caseEtudiee.setDanger(Math.max(compteurVent, compteurOdeur));			
 		}
 		if(compteurVent != compteurCaseVisitee) {
 			caseEtudiee.setCrevasse(0);
 		}
-		//Regle 3 : Si la case non visitee n'a ni de monstre potentiel, ni de crevasse 
-		//potentielle, alors elle est vide
+		//Regle 5 : 
+		//Si la case non visitee n'a ni de monstre potentiel, ni de crevasse 
+		//potentielle, 
+		//Alors elle est vide
 		if(caseEtudiee.getCrevasse() == 0 && caseEtudiee.getMonstre() == 0) {
 			caseEtudiee.setVide(true);
 			caseEtudiee.setDanger(0);
 //			System.out.println("setDanger (!monstre && !crevasse)= 0, "+caseEtudiee.getPosition().toString()+", Danger : "+caseEtudiee.getDanger());
 		}
 
-	}
-
-	public Case getCasePrecedente() {
-		return casePrecedente;
-	}
-
-	public void setCasePrecedente(Case casePrecedente) {
-		this.casePrecedente = casePrecedente;
-	}
-
-	public List<Case> getCasesConnues() {
-		return casesConnues;
-	}
-
-	public void setCasesConnues(List<Case> casesConnues) {
-		this.casesConnues = casesConnues;
 	}
 
 	public int getPerformance() {
