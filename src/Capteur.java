@@ -9,6 +9,11 @@ public class Capteur {
 	protected boolean crevasse;
 	List<Case> casesForet = new ArrayList<>();
 	
+	/**
+	 * Capte l'environnement et met a jour l'etat du capteur
+	 * 
+	 * @result Capteur a jour
+	 */	
 	public void capter(Case caseCourrante, Foret foret) {
 		casesForet = new ArrayList<>();
 		for(int x = 0; x < Foret.dimension; x++) {
@@ -26,6 +31,8 @@ public class Capteur {
 			}
 		}		
 	}
+	
+	//Getters / Setters
 	
 	public List<Case> observerForet() {
 		return casesForet;

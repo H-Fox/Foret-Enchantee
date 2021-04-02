@@ -45,7 +45,12 @@ public class Case {
 	}
 	
 
-
+	/**
+	 * Remplit les cases adjacentes a cette case
+	 *
+	 *
+	 * @result Cases adjacentes initialisees
+	 */
 	protected void initialiserCasesAdjacentes() {
 		List<Case> casesAdjacentes = new ArrayList<>();
 		

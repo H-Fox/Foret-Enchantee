@@ -57,37 +57,7 @@ public class Foret {
 
 		grille[x][y].setBrillante(true);
 		grille[x][y].getContenu().add(new Portail());
-
-		//Placer monstres et/ou crevasse
-//		int nombreCasesARemplir = (int) (Math.random()*(Foret.dimension*Foret.dimension)); //Nombre de cases à remplir entre 0 et dimension²
-//		
-//		for (int i = 0; i < nombreCasesARemplir; i++) {
-//			do {
-//				x = (int) (Math.random()*Foret.dimension);
-//				y = (int) (Math.random()*Foret.dimension);
-//			}
-//			while(grille[x][y].isJoueur()
-//					|| grille[x][y].isBrillante());
-//
-//			placerObstacle(grille[x][y]);
-			
-			
-//			int choix = (int) (Math.random()*3);
-//
-//			switch(choix) {
-//			case 0:
-//				//Placer un monstre	
-//				grille[x][y].getContenu().add(new Monstre());
-//				grille[x][y].setMonstre(1);
-//				break;
-//			case 1:
-//				//Placer une crevasse	
-//				grille[x][y].getContenu().add(new Crevasse());
-//				grille[x][y].setCrevasse(1);
-//				break;
-//			}
-
-//		}
+		
 		//Placer monstre
 		int nombreDeMonstres = (int) (Foret.dimension*Foret.dimension*Probabilites.probaApparitionMonstre) -2;
 		for(int i = 0; i < nombreDeMonstres; i++) {
@@ -118,7 +88,13 @@ public class Foret {
 		//Placer vent et odeur
 		MAJForet();
 	}
-
+	
+	/**
+	 * Place les odeurs et les vents en fonction de la répartition
+	 * des monstres et des crevasses.
+	 * 
+	 * @result Grille odeurs et vents places
+	 */
 	public void MAJForet() {
 
 		//Placer vent et odeur
@@ -168,8 +144,6 @@ public class Foret {
 
 	public void afficher() {
 		affichage.afficherGraphiquement(this);
-		//System.out.println("Dimension dans afficher :"+ dimension);
-		//System.out.println("Dimensions grille dans afficher : "+grille.length+", "+grille[0].length);
 		for (int i = 0; i < Foret.dimension; i++) {
 			for (int j = 0; j < Foret.dimension; j++) {
 				boolean monstre = false;
@@ -216,6 +190,8 @@ public class Foret {
 				if(grille[i][j].isOdeur() && grille[i][j].isVent()) {
 					odeurVent = ", O/V";
 				}
+				//Modes d'affichage console
+				
 //				System.out.print("  "+cell+visitee+odeurVent);
 				System.out.print(cell);
 				System.out.print(" "+grille[i][j].getDanger());
@@ -225,6 +201,8 @@ public class Foret {
 		}
 
 	}
+	
+	//Getters / Setters
 	
 	public Case getCaseCourrante() {
 		Case caseCourrante = new Case();

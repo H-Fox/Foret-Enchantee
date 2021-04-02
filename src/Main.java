@@ -8,7 +8,9 @@ public class Main {
 		while(true) {			
 			Foret foret = new Foret();
 			niveau = Foret.dimension - 2;
+			
 			System.out.println("\n\nLancement du niveau "+niveau+"\n");
+			
 			Capteur capteur = new Capteur();
 			Agent agent = new Agent(foret.getPositionJoueur());
 			capteur.capter(foret.getCaseCourrante(), foret);
@@ -37,14 +39,6 @@ public class Main {
 				Foret.dimension = 2;
 				System.out.println("\n\n");
 			}
-		}
-		
-		
+		}		
 	}
-	
-	public static void jouer() {
-		
-		
-	}
-
 }
