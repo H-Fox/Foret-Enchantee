@@ -2,6 +2,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import constantes.Directions;
+import constantes.Probabilites;
 
 public class Foret {
 
@@ -11,12 +12,11 @@ public class Foret {
 	protected ForetGraphique affichage;
 	protected Capteur capteur;
 	protected Effecteur effecteur;
+	protected List<Integer> positionJoueur;
 
 	public Foret() {
 		dimension++;
-
-		System.out.println(dimension);
-		joueur = new Agent(this);
+		positionJoueur = new ArrayList<>();
 		grille = new Case[dimension][dimension];
 		for(int i = 0; i < dimension; i ++) {
 			for(int j = 0; j < dimension; j ++) {
@@ -27,7 +27,7 @@ public class Foret {
 			}
 		}
 		initialiserGrille();
-		affichage = new ForetGraphique(dimension);
+		affichage = new ForetGraphique();
 	}
 
 
@@ -42,54 +42,79 @@ public class Foret {
 		int x = (int) (Math.random()*Foret.dimension);
 		int y = (int) (Math.random()*Foret.dimension);
 
-		System.out.println("Placer joueur : "+x+", "+y);
-
 		grille[x][y].setJoueur(true);
 		grille[x][y].setVisitee(true);
-		grille[x][y].setDanger(0);
-		joueur.setX(x);
-		joueur.setY(y);
+		List<Integer> temp = new ArrayList<>();
+		temp.add(0);
+		temp.add(0);
+		grille[x][y].setDanger(temp);
+		positionJoueur.add(x);
+		positionJoueur.add(y);
 
 		//Placer portail
 		x = (int) (Math.random()*Foret.dimension);
 		y = (int) (Math.random()*Foret.dimension);
-		System.out.println("Placer portail : "+x+", "+y);
 
 		grille[x][y].setBrillante(true);
 		grille[x][y].getContenu().add(new Portail());
 
 		//Placer monstres et/ou crevasse
-		int nombreCasesARemplir = (int) (Math.random()*(Foret.dimension*Foret.dimension)); //Nombre de cases à remplir entre 0 et dimension²
-		System.out.println("Nombre de cases a remplir : "+nombreCasesARemplir);
-		for (int i = 0; i < nombreCasesARemplir; i++) {
+//		int nombreCasesARemplir = (int) (Math.random()*(Foret.dimension*Foret.dimension)); //Nombre de cases à remplir entre 0 et dimension²
+//		
+//		for (int i = 0; i < nombreCasesARemplir; i++) {
+//			do {
+//				x = (int) (Math.random()*Foret.dimension);
+//				y = (int) (Math.random()*Foret.dimension);
+//			}
+//			while(grille[x][y].isJoueur()
+//					|| grille[x][y].isBrillante());
+//
+//			placerObstacle(grille[x][y]);
+			
+			
+//			int choix = (int) (Math.random()*3);
+//
+//			switch(choix) {
+//			case 0:
+//				//Placer un monstre	
+//				grille[x][y].getContenu().add(new Monstre());
+//				grille[x][y].setMonstre(1);
+//				break;
+//			case 1:
+//				//Placer une crevasse	
+//				grille[x][y].getContenu().add(new Crevasse());
+//				grille[x][y].setCrevasse(1);
+//				break;
+//			}
 
+//		}
+		//Placer monstre
+		int nombreDeMonstres = (int) (Foret.dimension*Foret.dimension*Probabilites.probaApparitionMonstre) -2;
+		for(int i = 0; i < nombreDeMonstres; i++) {
 			do {
 				x = (int) (Math.random()*Foret.dimension);
 				y = (int) (Math.random()*Foret.dimension);
-				System.out.println("Placer element : "+x+", "+y);
 			}
 			while(grille[x][y].isJoueur()
-					|| grille[x][y].isBrillante());
-
-			int choix = (int) (Math.random()*3);
-
-			switch(choix) {
-			case 0:
-				//Placer un monstre	
-				System.out.println("Placer monstre : "+x+", "+y);
-				grille[x][y].getContenu().add(new Monstre());
-				grille[x][y].setMonstre(1);
-				break;
-			case 1:
-				//Placer une crevasse	
-				System.out.println("Placer crevasse : "+x+", "+y);
-				grille[x][y].getContenu().add(new Crevasse());
-				grille[x][y].setCrevasse(1);
-				break;
-			}
-
+					|| grille[x][y].isBrillante()
+					|| grille[x][y].getMonstre() == 1);
+			grille[x][y].getContenu().add(new Monstre());
+			grille[x][y].setMonstre(1);
 		}
-
+		//Placer crevasse
+		int nombreDeCrevasses = (int) (Foret.dimension*Foret.dimension*Probabilites.probaApparitionCrevasse) - 2;
+		for(int i = 0; i < nombreDeCrevasses; i++) {
+			do {
+				x = (int) (Math.random()*Foret.dimension);
+				y = (int) (Math.random()*Foret.dimension);
+			}
+			while(grille[x][y].isJoueur()
+					|| grille[x][y].isBrillante()
+					|| grille[x][y].getCrevasse() == 1);
+			grille[x][y].getContenu().add(new Crevasse());
+			grille[x][y].setCrevasse(1);
+		}
+		
 		//Placer vent et odeur
 		MAJForet();
 	}
@@ -143,8 +168,8 @@ public class Foret {
 
 	public void afficher() {
 		affichage.afficherGraphiquement(this);
-		System.out.println("Dimension dans afficher :"+ dimension);
-		System.out.println("Dimensions grille dans afficher : "+grille.length+", "+grille[0].length);
+		//System.out.println("Dimension dans afficher :"+ dimension);
+		//System.out.println("Dimensions grille dans afficher : "+grille.length+", "+grille[0].length);
 		for (int i = 0; i < Foret.dimension; i++) {
 			for (int j = 0; j < Foret.dimension; j++) {
 				boolean monstre = false;
@@ -192,6 +217,7 @@ public class Foret {
 					odeurVent = ", O/V";
 				}
 //				System.out.print("  "+cell+visitee+odeurVent);
+				System.out.print(cell);
 				System.out.print(" "+grille[i][j].getDanger());
 				//System.out.print("J = "+grille[i][j].isJoueur()+", M = "+monstre+", C = "+crevasse+", P = "+portail+"   ");
 			}
@@ -199,7 +225,28 @@ public class Foret {
 		}
 
 	}
+	
+	public Case getCaseCourrante() {
+		Case caseCourrante = new Case();
+		for(int x = 0; x < Foret.dimension; x++) {
+			for(int y = 0; y < Foret.dimension; y++) {
+				//Traitement des cases non visitees uniquement
+				if(this.grille[x][y].isJoueur()) {
+					caseCourrante = this.grille[x][y];
+				}
+			}
+		}
+		return caseCourrante;
+	}
 
+	public List<Integer> getPositionJoueur() {
+		return positionJoueur;
+	}
+
+	public void setPositionJoueur(List<Integer> positionJoueur) {
+		this.positionJoueur = positionJoueur;
+	}
+	
 	public Case[][] getGrille() {
 		return grille;
 	}
@@ -224,15 +271,15 @@ public class Foret {
 
 
 
-	public Agent getJoueur() {
-		return joueur;
-	}
-
-
-
-	public void setJoueur(Agent joueur) {
-		this.joueur = joueur;
-	}
+//	public Agent getJoueur() {
+//		return joueur;
+//	}
+//
+//
+//
+//	public void setJoueur(Agent joueur) {
+//		this.joueur = joueur;
+//	}
 
 
 

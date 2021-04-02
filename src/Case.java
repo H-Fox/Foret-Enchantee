@@ -10,7 +10,7 @@ public class Case {
 	//Liste contenant les elements (monstre/crevasse) de la case
 	private List<Element> contenu;
 	//Niveau de danger estime par l'agent de la case
-	private int danger;
+	private List<Integer> danger; //Danger monstre/Crevasse
 	//Variables booleennes d'etats de la case (visibles par l'agent une fois la case visitee)
 	private boolean joueur;
 	private boolean brillante;
@@ -32,7 +32,9 @@ public class Case {
 		vent = false;
 		monstre = -1;
 		crevasse = -1;
-		danger = 1;
+		danger = new ArrayList<>();
+		danger.add(99);
+		danger.add(99);
 		valable = true;
 		contenu = new ArrayList<>();
 		joueur = false;
@@ -45,7 +47,6 @@ public class Case {
 
 
 	protected void initialiserCasesAdjacentes() {
-//		System.out.println("initAdja");
 		List<Case> casesAdjacentes = new ArrayList<>();
 		
 		for(int i = 0; i < 4; i++) {
@@ -58,7 +59,6 @@ public class Case {
 				}
 				else {
 					casesAdjacentes.set(Directions.BAS, foret.grille[this.getPosition().get(0)][this.getPosition().get(1)+1]);
-					System.out.println();
 				}
 			}
 			if(i == Directions.HAUT) {
@@ -113,11 +113,15 @@ public class Case {
 		this.casesAdjacentes = casesAdjacentes;
 	}
 
-	public int getDanger() {
+	public int getDangerTotal() {
+		return danger.get(0)+danger.get(1);
+	}
+	
+	public List<Integer> getDanger() {
 		return danger;
 	}
 
-	public void setDanger(int danger) {
+	public void setDanger(List<Integer> danger) {
 		this.danger = danger;
 	}
 

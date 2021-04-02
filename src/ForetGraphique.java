@@ -1,22 +1,21 @@
 
 
-import java.awt.BorderLayout;
 import java.awt.Container;
-import java.awt.EventQueue;
 import java.awt.GridLayout;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.border.EmptyBorder;
 
 public class ForetGraphique extends JFrame {
 
-	public int taille;
-
+	/**
+	 * 
+	 */
 	private static final long serialVersionUID = 1L;
-	private JButton[][] mesCases;
+
+	private JButton[][] grille;
+	
 	private ImageIcon AGENT = new ImageIcon(getClass().getResource("images/Agent.png"));
 	private ImageIcon MONSTRE = new ImageIcon(getClass().getResource("images/Monstre.png"));
 	private ImageIcon CREVASSE = new ImageIcon(getClass().getResource("images/Crevasse.png"));
@@ -31,19 +30,16 @@ public class ForetGraphique extends JFrame {
 	private ImageIcon OdeurVent = new ImageIcon(getClass().getResource("images/OdeurVent.png"));
 
 
-	public ForetGraphique(int taille){
-		this.taille = taille;
-		mesCases = new JButton[taille][taille];
+	public ForetGraphique(){
+		grille = new JButton[Foret.dimension][Foret.dimension];
 		setTitle("Foret");
-		setSize(700,500);
-		setLayout(new GridLayout(taille,taille));
-		Container c = getContentPane();
-		System.out.println(taille);
-		for(int i =0;i<taille;i++) {
-			for(int j = 0;j<taille;j++) {				
-				mesCases[i][j] = new JButton();
-				System.out.println(taille);
-				c.add(mesCases[i][j]);
+		setSize(800,450);
+		setLayout(new GridLayout(Foret.dimension,Foret.dimension));
+		Container container = getContentPane();
+		for(int i = 0; i < Foret.dimension; i++) {
+			for(int j = 0; j < Foret.dimension; j++) {				
+				grille[i][j] = new JButton();
+				container.add(grille[i][j]);
 			}
 		}
 
@@ -69,42 +65,42 @@ public class ForetGraphique extends JFrame {
 						crevasse = true;
 					}
 				}
-				mesCases[i][j].setIcon(CASENOIRE);
+				grille[i][j].setIcon(CASENOIRE);
 				if(foret.grille[i][j].isVisitee()) {
 					if(foret.grille[i][j].isOdeur() && !foret.grille[i][j].isVent()) {
 						//Afficher odeur et pas vent
 						if(foret.grille[i][j].isJoueur()) {
-							mesCases[i][j].setIcon(AGENTODEUR);
+							grille[i][j].setIcon(AGENTODEUR);
 						}
 						else {
-							mesCases[i][j].setIcon(ODEUR);
+							grille[i][j].setIcon(ODEUR);
 						}
 					}
 					if(foret.grille[i][j].isOdeur() && foret.grille[i][j].isVent()) {
 						//Afficher monstre ET crevasse
 						if(foret.grille[i][j].isJoueur()) {
-							mesCases[i][j].setIcon(AGENTVENTODEUR);
+							grille[i][j].setIcon(AGENTVENTODEUR);
 						}
 						else {
-							mesCases[i][j].setIcon(OdeurVent);
+							grille[i][j].setIcon(OdeurVent);
 						}
 					}
 					if(!foret.grille[i][j].isOdeur() && !foret.grille[i][j].isVent()) {
 						//checker si odeur/vent
 						if(foret.grille[i][j].isJoueur()) {
-							mesCases[i][j].setIcon(AGENT);
+							grille[i][j].setIcon(AGENT);
 						}
 						else {
-							mesCases[i][j].setIcon(null);
+							grille[i][j].setIcon(null);
 						}
 					}
 					if (!foret.grille[i][j].isOdeur() && foret.grille[i][j].isVent()) {
 						//Afficher crevasse
 						if(foret.grille[i][j].isJoueur()) {
-							mesCases[i][j].setIcon(AGENTVENT);
+							grille[i][j].setIcon(AGENTVENT);
 						}
 						else {
-							mesCases[i][j].setIcon(VENT);
+							grille[i][j].setIcon(VENT);
 						}
 					}
 
@@ -114,26 +110,26 @@ public class ForetGraphique extends JFrame {
 					if(foret.grille[i][j].isBrillante()) {
 						//Afficher portail
 						if(foret.grille[i][j].isJoueur()) {
-							mesCases[i][j].setIcon(AGENTPORTAIL);
+							grille[i][j].setIcon(AGENTPORTAIL);
 						}
 						else {
-							mesCases[i][j].setIcon(PORTAIL);
+							grille[i][j].setIcon(PORTAIL);
 						}
 
 					}
 
 					if(monstre && !crevasse) {
 						//Afficher monstre
-						mesCases[i][j].setIcon(MONSTRE);
+						grille[i][j].setIcon(MONSTRE);
 					}
 					if(monstre && crevasse) {
 						//Afficher monstre ET crevasse
-						mesCases[i][j].setIcon(MONSTRE);
+						grille[i][j].setIcon(MONSTRE);
 					}
 					
 					if (!monstre && crevasse) {
 						//Afficher crevasse
-						mesCases[i][j].setIcon(CREVASSE);
+						grille[i][j].setIcon(CREVASSE);
 					}
 				}
 
@@ -142,15 +138,5 @@ public class ForetGraphique extends JFrame {
 			}
 		}
 
-	}
-
-
-
-
-	public int getTaille() {
-		return taille;
-	}
-	public void setTaille(int taille) {
-		this.taille = taille;
 	}
 }
