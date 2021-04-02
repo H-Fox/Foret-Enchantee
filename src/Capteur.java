@@ -1,3 +1,4 @@
+import java.util.List;
 
 public class Capteur {
 	
@@ -5,6 +6,15 @@ public class Capteur {
 	protected boolean vent;
 	protected boolean brillant;
 	protected boolean crevasse;
+	List<Case> casesNonVisitees;
+	
+	public void capter(Case caseCourrente, Foret foret) {
+		odeur = false;
+		vent = false;
+		brillant = false;
+		crevasse = false;
+		
+	}
 	
 	public boolean isCrevasse() {
 		return crevasse;

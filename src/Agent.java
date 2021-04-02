@@ -29,8 +29,7 @@ public class Agent extends Element{
 	}
 	
 
-	public Agent(Foret foret) {
-		
+	public Agent(Foret foret) {		
 		vivant = true;
 		listeActionsPossiblesPrio1 = new ArrayList<>();
 		listeActionsPossiblesPrio2 = new ArrayList<>();
@@ -40,6 +39,10 @@ public class Agent extends Element{
 		instance = this;
 	}
 	
+	/**
+	 * Sequence des methodes permettant le fonctionnement de l'agent
+	 * 
+	 */
 	protected void jouer() {
 		if(this.capteur.isBrillant()) {			
 			gagne = true;
@@ -56,35 +59,50 @@ public class Agent extends Element{
 		}
 	}
 
+	/**
+	 * Choisi l'action a realiser en fonction du contenu de l'effecteur
+	 * issu de la prise de decision
+	 * 
+	 * (Declenche action(s))
+	 * 
+	 * @result Action(s) lancee(s)
+	 */
 	protected void agir() {
 		if(effecteur != null) {
 			switch(effecteur.getPriorite()) {
 			case 1:
-//			System.out.println("Prio 1 : "+effecteur.getCaseCiblee().getPosition().toString());
 				deplacer(effecteur);
 				break;
 			case 2:
-//				System.out.println("Prio 2 : "+effecteur.getCaseCiblee().getPosition().toString());
 				tirer(effecteur);
 				deplacer(effecteur);
 				break;
 			case 3:
-//				System.out.println("Prio 3 : "+effecteur.getCaseCiblee().getPosition().toString());
 				deplacer(effecteur);
 				break;
 			}
 		}
 		else {
-//			System.out.println("Aucune action trouvée");
+			System.out.println("Aucune action trouvée");
 		}
 	}
 
+	/**
+	 * Deplace le joueur sur la case contenue dans l'effecteur
+	 * 
+	 * (Action deplacer)
+	 * 
+	 * @param:
+	 * 		effecteur
+	 * @result Joueur deplace
+	 */
 	protected void deplacer(Effecteur eff) {
-//		System.out.println("Dep : "+eff.getCaseCiblee().getPosition().toString());
 		foret.grille[x][y].setJoueur(false);
+		
 		x = eff.getCaseCiblee().getPosition().get(0);
 		y = eff.getCaseCiblee().getPosition().get(1);
 		foret.grille[x][y].setJoueur(true);
+		
 		capteur.setOdeur(foret.grille[x][y].isOdeur());
 		capteur.setVent(foret.grille[x][y].isVent());
 		capteur.setBrillant(foret.grille[x][y].isBrillante());
@@ -99,6 +117,15 @@ public class Agent extends Element{
 		}
 	}
 
+	/**
+	 * Tire sur la case ciblee contenue dans l'effecteur
+	 * 
+	 * (Action tirer)
+	 * 
+	 * @param:
+	 * 		effecteur
+	 * @result Case videe de ses monstres
+	 */
 	protected void tirer(Effecteur eff) {
 
 		List<Element> nouveauContenu = new ArrayList<>();
@@ -112,15 +139,23 @@ public class Agent extends Element{
 		foret.MAJForet();
 	}
 
+	/**
+	 * Determine l'action a realiser parmi celles possibles
+	 * 
+	 * (Prise de decision)
+	 *
+	 * @result Effecteur mis a jour
+	 */
 	protected void choisirAction() {
 
 		Effecteur effecteurChoisi = new Effecteur(null, -1, false);
-
+		//Parcours liste action de priorite 1
 		if(listeActionsPossiblesPrio1.size() > 0) {
 			//Choisir aleatoirement une case non visitee et sans danger
 			int rand = (int) (Math.random()*listeActionsPossiblesPrio1.size());
 			effecteurChoisi = listeActionsPossiblesPrio1.get(rand);
 		}
+		//Parcours liste action de priorite 2
 		else if(listeActionsPossiblesPrio2.size() > 0) {
 			//Choisir la case non visitee avec la plus grande chance de contenir un monstre
 			Case caseForteChanceMonstre = new Case();
@@ -132,6 +167,7 @@ public class Agent extends Element{
 				}
 			}
 		}
+		//Parcours liste action de priorite 3
 		else if(listeActionsPossiblesPrio3.size() > 0) {
 			//Choisir la case non visitee la moins dangeureuse possible
 			Case caseMoinsRisquee = new Case();
@@ -146,6 +182,14 @@ public class Agent extends Element{
 		effecteur = effecteurChoisi;
 	}
 
+	/**
+	 * Determine tout ce qu'il est possible, en classant les actions possibles 
+	 * par ordre de priorite.
+	 *  
+	 * (Interpretations des faits)
+	 * 
+	 * @result Actions possibles mises a jour
+	 */
 	protected void listerActionsPossibles() {
 
 		List<Effecteur> actionsPossiblesPrio1 = new ArrayList<>();
@@ -179,22 +223,32 @@ public class Agent extends Element{
 		listeActionsPossiblesPrio3 = actionsPossiblesPrio3;
 	}
 
+	/**
+	 * Itere l'etude de case sur l'ensemble des cases non visitees
+	 * de l'enrionnement.
+	 * 
+	 * (Mise a jour des faits)
+	 * 
+	 * @result Dangers des cases mis a jour
+	 */
 	protected void interpreterConnaissances() {
-
+		//Parcours de la grille
 		for(int x = 0; x < Foret.dimension; x++) {
 			for(int y = 0; y < Foret.dimension; y++) {
+				//Traitement des cases non visitees uniquement
 				if(!foret.grille[x][y].isVisitee()) {
 					etudierAdjacence(foret.grille[x][y]);
 				}
 			}
 		}
 	}
+	
 	/**
 	 * Met a jour l'etat de la case etudiee en fonction
 	 * de ce que l'agent sait sur les cases adjacentes 
 	 * de cette case etudiee.
 	 * 
-	 * (Mise a jour des faits)
+	 * (Mise a jour des faits unitairement)
 	 * 
 	 * @param:
 	 * 		caseEtudiee
@@ -203,25 +257,24 @@ public class Agent extends Element{
 	public void etudierAdjacence(Case caseEtudiee) {
 		
 		caseEtudiee.initialiserCasesAdjacentes();
-//		System.out.println("EtudierAdja : "+caseEtudiee.getPosition().toString()+", "+caseEtudiee.getCasesAdjacentes().size());
 		int compteurOdeur = 0;
 		int compteurVent = 0;
 		int compteurCaseVisitee = 0;
 		int compteur =1;
-		for(Case caseTraitee : caseEtudiee.getCasesAdjacentes()) {		
-			//System.out.println("Case adjacente "+compteur+" : "+caseTraitee.getPosition().toString());
+		//Incremente compteur odeur/vent/caseVisitees
+		for(Case caseTraitee : caseEtudiee.getCasesAdjacentes()) {
 			compteur++;
 			if(caseTraitee.isValable()) {
-				//System.out.println("valable");
 				//Valable
-				if(caseTraitee.isVisitee()) {
-					
+				if(caseTraitee.isVisitee()) {					
 					//Valable ET visitee
 					compteurCaseVisitee++;
 					if(caseTraitee.isOdeur()) {
+						//Valable ET visitee ET odeur
 						compteurOdeur++;
 					}
 					if(caseTraitee.isVent()) {
+						//Valable ET visitee ET vent
 						compteurVent++;
 					}
 				}
@@ -237,9 +290,8 @@ public class Agent extends Element{
 		}
 		//Regle 2 : 
 		//Si les cases connues de la périphérie d'une case non visitee
-		//		ne contiennent pas toutes des odeurs,
-		//Alors il n'y a pas de monstre dans cette case non visitee
-		//Sinon il y a potentiellement un monstre
+		//		contiennent  toutes des odeurs,
+		//Alors il y a potentiellement un ou des monstres dans cette case non visitee
 		if(compteurOdeur == compteurCaseVisitee && compteurOdeur != 0) {
 			//Presence potentiel d'un monstre
 			caseEtudiee.setMonstre(2);
@@ -254,28 +306,31 @@ public class Agent extends Element{
 		}
 		//Regle 4 : 
 		//Si les cases connues de la périphérie d'une case non visitee
-		//		ne contiennent pas toutes du vent, 
-		//Alors il n'y a pas de crevasse dans cette case non visitee
-		//Sinon il y a potentiellement un crevasse
+		//		contiennent toutes du vent, 
+		//Alors il y a potentiellement une ou des crevasses dans cette case non visite
 		if(compteurVent == compteurCaseVisitee && compteurVent != 0) {
 			caseEtudiee.setCrevasse(2); //Crevasse Potentiel
 			caseEtudiee.setDanger(Math.max(compteurVent, compteurOdeur));			
 		}
+		//Regle 5 :
+		//Si les cases connues de la peripheries ne sont pas toutes "Vent"
+		//Alors il n'y a pas de crevasse
 		if(compteurVent != compteurCaseVisitee) {
 			caseEtudiee.setCrevasse(0);
 		}
-		//Regle 5 : 
+		//Regle 6 : 
 		//Si la case non visitee n'a ni de monstre potentiel, ni de crevasse 
 		//potentielle, 
 		//Alors elle est vide
 		if(caseEtudiee.getCrevasse() == 0 && caseEtudiee.getMonstre() == 0) {
 			caseEtudiee.setVide(true);
 			caseEtudiee.setDanger(0);
-//			System.out.println("setDanger (!monstre && !crevasse)= 0, "+caseEtudiee.getPosition().toString()+", Danger : "+caseEtudiee.getDanger());
 		}
 
 	}
 
+	//Getters / Setters
+	
 	public int getPerformance() {
 		return performance;
 	}

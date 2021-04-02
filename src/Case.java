@@ -113,8 +113,6 @@ public class Case {
 		this.casesAdjacentes = casesAdjacentes;
 	}
 
-
-
 	public int getDanger() {
 		return danger;
 	}

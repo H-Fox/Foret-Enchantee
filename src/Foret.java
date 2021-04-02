@@ -9,6 +9,8 @@ public class Foret {
 	protected static int dimension = 2;
 	protected Agent joueur;
 	protected ForetGraphique affichage;
+	protected Capteur capteur;
+	protected Effecteur effecteur;
 
 	public Foret() {
 		dimension++;
